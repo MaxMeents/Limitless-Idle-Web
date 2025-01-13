@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tile Destroy Game</title>
+</head>
+<body>
+
+<script>
+/******************************************************
+  Efficiently draw thousands of tiles using canvas
+  Each tile is destroyable on click, without affecting tiles beneath
+******************************************************/
+
+// 1. Create a canvas dynamically
+const canvas = document.createElement("canvas");
+document.body.appendChild(canvas);
+const ctx = canvas.getContext("2d");
+
+// 2. Resize the canvas to fill the window
+function resizeCanvas() {
+  canvas.width = 5000;
+  canvas.height = 5000;
+}
+resizeCanvas();
+
+// 3. Load your tile & mineral images
+const tileImage = new Image();
+tileImage.src = "https://github.com/MaxMeents/Limitless-Idle-Web/blob/main/img/High Qualikty Tiles/Dirt 1 512.png?raw=true";
+
+const mineralImage = new Image();
+mineralImage.src = "https://github.com/MaxMeents/Limitless-Idle-Web/blob/main/img/Minerals/Tons Tanzanite 3.png?raw=true";
+
+// 4. Function to draw a single tile (dirt + mineral)
+function drawTile(x, y, size) {
+  ctx.drawImage(tileImage, x, y, size, size); // Draw the base tile
+  ctx.drawImage(mineralImage, x, y, size, size); // Overlay the mineral
+}
+
+// 5. Function to create a 4-chunk diamond
+function draw4ChunkDiamond(initX, initY, distX, distY, size, destroyedTiles) {
+  const positions = [
+    { x: initX, y: initY }, // Center
+    { x: initX - distX, y: initY + distY }, // Left
+    { x: initX + distX, y: initY + distY }, // Right
+    { x: initX, y: initY + distY * 2 }, // Bottom
+  ];
+
+  positions.forEach(({ x, y }) => {
+    if (!destroyedTiles.has(`${x},${y}`)) {
+      drawTile(x, y, size);
+    }
+  });
+}
+
+// 6. Function to create a 16-chunk diamond structure
+function draw16ChunkDiamond(x, y, size, destroyedTiles) {
+  const distX = size * 0.52; // Horizontal offset
+  const distY = size * 0.25; // Vertical offset
+
+  const distYBetween4ChunkLeftAndRight = size / 2;
+  const distYBetween4ChunkTopBottom = size;
+  const leftOffset = size;
+
+  // Draw 4-chunk diamonds to form a 16-chunk structure
+  draw4ChunkDiamond(x, y, distX, distY, size, destroyedTiles); // Top-right
+  draw4ChunkDiamond(x + leftOffset, y + distYBetween4ChunkLeftAndRight, distX, distY, size, destroyedTiles); // Bottom-right
+  draw4ChunkDiamond(x - leftOffset, y + distYBetween4ChunkLeftAndRight, distX, distY, size, destroyedTiles); // Bottom-left
+  draw4ChunkDiamond(x, y + distYBetween4ChunkTopBottom, distX, distY, size, destroyedTiles); // Top-left
+}
+
+// 7. Store destroyed tiles
+const destroyedTiles = new Set();
+
+// 8. Handle click events
+canvas.addEventListener("click", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  const size = 150;
+  const distX = size * 0.52;
+  const distY = size * 0.25;
+
+  // Calculate tile coordinates based on click position
+  const tileX = Math.round(mouseX / distX) * distX;
+  const tileY = Math.round(mouseY / distY) * distY;
+
+  destroyedTiles.add(`${tileX},${tileY}`);
+});
+
+// 9. Animation loop to render everything
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the 16-chunk diamond structures
+  draw16ChunkDiamond(300, 75 + 6 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75 + 5 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75 + 4 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75 + 3 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75 + 2 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75 + 1 * 75, 150, destroyedTiles);
+  draw16ChunkDiamond(300, 75, 150, destroyedTiles);
+
+  requestAnimationFrame(animate); // Repeat the draw loop
+}
+
+// 10. Start rendering once the images are loaded
+tileImage.onload = () => {
+  mineralImage.onload = () => {
+    animate(); // Start the animation loop
+  };
+};
+</script>
+
+</body>
+</html>
