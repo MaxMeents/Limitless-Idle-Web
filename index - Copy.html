@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tile Destroy Game (4 Quadrants × 64 Tiles = 256)</title>
+  <style>
+/* Style for the "View" div */
+    #viewDiv {
+      position: absolute;
+      top: 10px;
+      left: 125px;
+      /* Gradient background */
+      background: linear-gradient(to right, #3498db, #8e44ad);
+      color: #fff;
+			border:2px solid black;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    /* Style for each button */
+    .myButton {
+      position: absolute;
+      /* Gradient background */
+      background: linear-gradient(to right, yellow, white);
+			border:3px solid black;
+      border-radius: 8px;
+      color: black;
+			font-weight:1000;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .myButton:hover {
+      opacity: 0.8;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, rgb(4, 15, 133),rgb(3, 66, 255));
+    }
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #333;
+    }
+    canvas {
+      display: block;
+    }
+      
+
+        .Layer {
+            background: linear-gradient(to bottom, #e0c097, #000000);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.9);
+        }
+
+        .Layer:before, .Layer:after {
+            content: '';
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            top: -100%;
+            left: -100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%);
+            animation: rotateGlow 6s linear infinite;
+        }
+
+        .Layer:after {
+            animation-delay: 3s;
+        }
+
+        @keyframes rotateGlow {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .border-light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-radius: 15px;
+            box-sizing: border-box;
+            animation: borderAnimation 4s linear infinite;
+        }
+
+        @keyframes borderAnimation {
+            0% {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                border-color: rgba(255, 255, 255, 0.8);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            }
+            100% {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+          integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
+          crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="Layer" style="position:absolute;top:0px;right:200px;width:130px;height:60px;"> Layer 0</div>
+  <div id="loading">Loading game assets...</div>
+  <div class="TileContainer"><canvas class="CanvasContainer"></canvas></div>
+  <script>
+    const canvas = $('.CanvasContainer')[0];
+    const ctx = canvas.getContext("2d");
+    $('.TileContainer').width($(window).width());
+    $('.TileContainer').height($(window).height());
+
+    function resizeCanvas() {
+      canvas.width = $(".TileContainer").width();
+      canvas.height = $(".TileContainer").height();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  let TP = "img/High Qualikty Tiles/"
+  let MP = "img/Minerals/64/"
+    // Define tile types with their image sources
+    const tileTypes = {
+      dirt1: {
+        image: new Image(),
+        src: TP +"Stone 1 512.png"
+      },
+      // If you add more tile types, do so here
+    };
+
+    // Define mineral types with their image sources
+    const mineralTypes = {
+     Few_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Few Amethyst 1.png"
+      },
+Few_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Few Amethyst 2.png"
+      },
+Few_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Few Amethyst 3.png"
+      },
+Few_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Few Carnelian 1.png"
+      },
+Few_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Few Carnelian 2.png"
+      },
+Few_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Few Carnelian 3.png"
+      },
+Few_Citrine_1: {
+        image: new Image(),
+        src: MP+"Few Citrine 1.png"
+      },
+Few_Citrine_2: {
+        image: new Image(),
+        src: MP+"Few Citrine 2.png"
+      },
+Few_Citrine_3: {
+        image: new Image(),
+        src: MP+"Few Citrine 3.png"
+      },
+Few_Coal_1: {
+        image: new Image(),
+        src: MP+"Few Coal 1.png"
+      },
+Few_Coal_2: {
+        image: new Image(),
+        src: MP+"Few Coal 2.png"
+      },
+Few_Coal_3: {
+        image: new Image(),
+        src: MP+"Few Coal 3.png"
+      },
+Few_Copper_1: {
+        image: new Image(),
+        src: MP+"Few Copper 1.png"
+      },
+Few_Copper_2: {
+        image: new Image(),
+        src: MP+"Few Copper 2.png"
+      },
+Few_Copper_3: {
+        image: new Image(),
+        src: MP+"Few Copper 3.png"
+      },
+Few_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 1.png"
+      },
+Few_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 2.png"
+      },
+Few_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 3.png"
+      },
+Few_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 1.png"
+      },
+Few_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 2.png"
+      },
+Few_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 3.png"
+      },
+Few_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 1.png"
+      },
+Few_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 2.png"
+      },
+Few_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 3.png"
+      },
+Few_Emerald_1: {
+        image: new Image(),
+        src: MP+"Few Emerald 1.png"
+      },
+Few_Emerald_2: {
+        image: new Image(),
+        src: MP+"Few Emerald 2.png"
+      },
+Few_Emerald_3: {
+        image: new Image(),
+        src: MP+"Few Emerald 3.png"
+      },
+Few_Gold_1: {
+        image: new Image(),
+        src: MP+"Few Gold 1.png"
+      },
+Few_Gold_2: {
+        image: new Image(),
+        src: MP+"Few Gold 2.png"
+      },
+Few_Gold_3: {
+        image: new Image(),
+        src: MP+"Few Gold 3.png"
+      },
+Few_Jade_1: {
+        image: new Image(),
+        src: MP+"Few Jade 1.png"
+      },
+Few_Jade_2: {
+        image: new Image(),
+        src: MP+"Few Jade 2.png"
+      },
+Few_Jade_3: {
+        image: new Image(),
+        src: MP+"Few Jade 3.png"
+      },
+Few_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 1.png"
+      },
+Few_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 2.png"
+      },
+Few_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 3.png"
+      },
+Few_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 1.png"
+      },
+Few_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 2.png"
+      },
+Few_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 3.png"
+      },
+Few_Platnium_1: {
+        image: new Image(),
+        src: MP+"Few Platnium 1.png"
+      },
+Few_Platnium_2: {
+        image: new Image(),
+        src: MP+"Few Platnium 2.png"
+      },
+Few_Platnium_3: {
+        image: new Image(),
+        src: MP+"Few Platnium 3.png"
+      },
+Few_Powder_1: {
+        image: new Image(),
+        src: MP+"Few Powder 1.png"
+      },
+Few_Powder_2: {
+        image: new Image(),
+        src: MP+"Few Powder 2.png"
+      },
+Few_Powder_3: {
+        image: new Image(),
+        src: MP+"Few Powder 3.png"
+      },
+Few_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 1.png"
+      },
+Few_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 2.png"
+      },
+Few_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 3.png"
+      },
+Few_Ruby_1: {
+        image: new Image(),
+        src: MP+"Few Ruby 1.png"
+      },
+Few_Ruby_2: {
+        image: new Image(),
+        src: MP+"Few Ruby 2.png"
+      },
+Few_Ruby_3: {
+        image: new Image(),
+        src: MP+"Few Ruby 3.png"
+      },
+Few_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Few Sapphire 1.png"
+      },
+Few_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Few Sapphire 2.png"
+      },
+Few_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Few Sapphire 3.png"
+      },
+Few_Silver_1: {
+        image: new Image(),
+        src: MP+"Few Silver 1.png"
+      },
+Few_Silver_2: {
+        image: new Image(),
+        src: MP+"Few Silver 2.png"
+      },
+Few_Silver_3: {
+        image: new Image(),
+        src: MP+"Few Silver 3.png"
+      },
+Few_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 1.png"
+      },
+Few_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 2.png"
+      },
+Few_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 3.png"
+      },
+Few_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Few Sunstone 1.png"
+      },
+Few_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Few Sunstone 2.png"
+      },
+Few_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Few Sunstone 3.png"
+      },
+Few_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 1.png"
+      },
+Few_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 2.png"
+      },
+Few_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 3.png"
+      },
+Few_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 1.png"
+      },
+Few_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 2.png"
+      },
+Few_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 3.png"
+      },
+Lots_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 1.png"
+      },
+Lots_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 2.png"
+      },
+Lots_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 3.png"
+      },
+Lots_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 1.png"
+      },
+Lots_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 2.png"
+      },
+Lots_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 3.png"
+      },
+Lots_Citrine_1: {
+        image: new Image(),
+        src: MP+"Lots Citrine 1.png"
+      },
+Lots_Citrine_2: {
+        image: new Image(),
+        src: MP+"Lots Citrine 2.png"
+      },
+Lots_Citrine_3: {
+        image: new Image(),
+        src: MP+"Lots Citrine 3.png"
+      },
+Lots_Coal_1: {
+        image: new Image(),
+        src: MP+"Lots Coal 1.png"
+      },
+Lots_Coal_2: {
+        image: new Image(),
+        src: MP+"Lots Coal 2.png"
+      },
+Lots_Coal_3: {
+        image: new Image(),
+        src: MP+"Lots Coal 3.png"
+      },
+Lots_Copper_1: {
+        image: new Image(),
+        src: MP+"Lots Copper 1.png"
+      },
+Lots_Copper_2: {
+        image: new Image(),
+        src: MP+"Lots Copper 2.png"
+      },
+Lots_Copper_3: {
+        image: new Image(),
+        src: MP+"Lots Copper 3.png"
+      },
+Lots_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 1.png"
+      },
+Lots_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 2.png"
+      },
+Lots_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 3.png"
+      },
+Lots_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 1.png"
+      },
+Lots_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 2.png"
+      },
+Lots_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 3.png"
+      },
+Lots_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 1.png"
+      },
+Lots_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 2.png"
+      },
+Lots_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 3.png"
+      },
+Lots_Emerald_1: {
+        image: new Image(),
+        src: MP+"Lots Emerald 1.png"
+      },
+Lots_Emerald_2: {
+        image: new Image(),
+        src: MP+"Lots Emerald 2.png"
+      },
+Lots_Emerald_3: {
+        image: new Image(),
+        src: MP+"Lots Emerald 3.png"
+      },
+Lots_Gold_1: {
+        image: new Image(),
+        src: MP+"Lots Gold 1.png"
+      },
+Lots_Gold_2: {
+        image: new Image(),
+        src: MP+"Lots Gold 2.png"
+      },
+Lots_Gold_3: {
+        image: new Image(),
+        src: MP+"Lots Gold 3.png"
+      },
+Lots_Jade_1: {
+        image: new Image(),
+        src: MP+"Lots Jade 1.png"
+      },
+Lots_Jade_2: {
+        image: new Image(),
+        src: MP+"Lots Jade 2.png"
+      },
+Lots_Jade_3: {
+        image: new Image(),
+        src: MP+"Lots Jade 3.png"
+      },
+Lots_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 1.png"
+      },
+Lots_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 2.png"
+      },
+Lots_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 3.png"
+      },
+Lots_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 1.png"
+      },
+Lots_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 2.png"
+      },
+Lots_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 3.png"
+      },
+Lots_Platnium_1: {
+        image: new Image(),
+        src: MP+"Lots Platnium 1.png"
+      },
+Lots_Platnium_2: {
+        image: new Image(),
+        src: MP+"Lots Platnium 2.png"
+      },
+Lots_Platnium_3: {
+        image: new Image(),
+        src: MP+"Lots Platnium 3.png"
+      },
+Lots_Powder_1: {
+        image: new Image(),
+        src: MP+"Lots Powder 1.png"
+      },
+Lots_Powder_2: {
+        image: new Image(),
+        src: MP+"Lots Powder 2.png"
+      },
+Lots_Powder_3: {
+        image: new Image(),
+        src: MP+"Lots Powder 3.png"
+      },
+Lots_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 1.png"
+      },
+Lots_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 2.png"
+      },
+Lots_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 3.png"
+      },
+Lots_Ruby_1: {
+        image: new Image(),
+        src: MP+"Lots Ruby 1.png"
+      },
+Lots_Ruby_2: {
+        image: new Image(),
+        src: MP+"Lots Ruby 2.png"
+      },
+Lots_Ruby_3: {
+        image: new Image(),
+        src: MP+"Lots Ruby 3.png"
+      },
+Lots_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 1.png"
+      },
+Lots_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 2.png"
+      },
+Lots_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 3.png"
+      },
+Lots_Silver_1: {
+        image: new Image(),
+        src: MP+"Lots Silver 1.png"
+      },
+Lots_Silver_2: {
+        image: new Image(),
+        src: MP+"Lots Silver 2.png"
+      },
+Lots_Silver_3: {
+        image: new Image(),
+        src: MP+"Lots Silver 3.png"
+      },
+Lots_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 1.png"
+      },
+Lots_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 2.png"
+      },
+Lots_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 3.png"
+      },
+Lots_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 1.png"
+      },
+Lots_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 2.png"
+      },
+Lots_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 3.png"
+      },
+Lots_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 1.png"
+      },
+Lots_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 2.png"
+      },
+Lots_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 3.png"
+      },
+Lots_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 1.png"
+      },
+Lots_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 2.png"
+      },
+Lots_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 3.png"
+      },
+Nothing: {
+        image: new Image(),
+        src: MP+"Nothing.png"
+      },
+One_Amethyst_1: {
+        image: new Image(),
+        src: MP+"One Amethyst 1.png"
+      },
+One_Amethyst_2: {
+        image: new Image(),
+        src: MP+"One Amethyst 2.png"
+      },
+One_Amethyst_3: {
+        image: new Image(),
+        src: MP+"One Amethyst 3.png"
+      },
+One_Amethyst_4: {
+        image: new Image(),
+        src: MP+"One Amethyst 4.png"
+      },
+One_Amethyst_5: {
+        image: new Image(),
+        src: MP+"One Amethyst 5.png"
+      },
+One_Amethyst_6: {
+        image: new Image(),
+        src: MP+"One Amethyst 6.png"
+      },
+One_Amethyst_7: {
+        image: new Image(),
+        src: MP+"One Amethyst 7.png"
+      },
+One_Amethyst_8: {
+        image: new Image(),
+        src: MP+"One Amethyst 8.png"
+      },
+One_Amethyst_9: {
+        image: new Image(),
+        src: MP+"One Amethyst 9.png"
+      },
+One_Carnelian_1: {
+        image: new Image(),
+        src: MP+"One Carnelian 1.png"
+      },
+One_Carnelian_2: {
+        image: new Image(),
+        src: MP+"One Carnelian 2.png"
+      },
+One_Carnelian_3: {
+        image: new Image(),
+        src: MP+"One Carnelian 3.png"
+      },
+One_Carnelian_4: {
+        image: new Image(),
+        src: MP+"One Carnelian 4.png"
+      },
+One_Carnelian_5: {
+        image: new Image(),
+        src: MP+"One Carnelian 5.png"
+      },
+One_Carnelian_6: {
+        image: new Image(),
+        src: MP+"One Carnelian 6.png"
+      },
+One_Carnelian_7: {
+        image: new Image(),
+        src: MP+"One Carnelian 7.png"
+      },
+One_Carnelian_8: {
+        image: new Image(),
+        src: MP+"One Carnelian 8.png"
+      },
+One_Carnelian_9: {
+        image: new Image(),
+        src: MP+"One Carnelian 9.png"
+      },
+One_Citrine_1: {
+        image: new Image(),
+        src: MP+"One Citrine 1.png"
+      },
+One_Citrine_2: {
+        image: new Image(),
+        src: MP+"One Citrine 2.png"
+      },
+One_Citrine_3: {
+        image: new Image(),
+        src: MP+"One Citrine 3.png"
+      },
+One_Citrine_4: {
+        image: new Image(),
+        src: MP+"One Citrine 4.png"
+      },
+One_Citrine_5: {
+        image: new Image(),
+        src: MP+"One Citrine 5.png"
+      },
+One_Citrine_6: {
+        image: new Image(),
+        src: MP+"One Citrine 6.png"
+      },
+One_Citrine_7: {
+        image: new Image(),
+        src: MP+"One Citrine 7.png"
+      },
+One_Citrine_8: {
+        image: new Image(),
+        src: MP+"One Citrine 8.png"
+      },
+One_Citrine_9: {
+        image: new Image(),
+        src: MP+"One Citrine 9.png"
+      },
+One_Coal_1: {
+        image: new Image(),
+        src: MP+"One Coal 1.png"
+      },
+One_Coal_2: {
+        image: new Image(),
+        src: MP+"One Coal 2.png"
+      },
+One_Coal_3: {
+        image: new Image(),
+        src: MP+"One Coal 3.png"
+      },
+One_Coal_4: {
+        image: new Image(),
+        src: MP+"One Coal 4.png"
+      },
+One_Coal_5: {
+        image: new Image(),
+        src: MP+"One Coal 5.png"
+      },
+One_Coal_6: {
+        image: new Image(),
+        src: MP+"One Coal 6.png"
+      },
+One_Coal_7: {
+        image: new Image(),
+        src: MP+"One Coal 7.png"
+      },
+One_Coal_8: {
+        image: new Image(),
+        src: MP+"One Coal 8.png"
+      },
+One_Coal_9: {
+        image: new Image(),
+        src: MP+"One Coal 9.png"
+      },
+One_Copper_1: {
+        image: new Image(),
+        src: MP+"One Copper 1.png"
+      },
+One_Copper_2: {
+        image: new Image(),
+        src: MP+"One Copper 2.png"
+      },
+One_Copper_3: {
+        image: new Image(),
+        src: MP+"One Copper 3.png"
+      },
+One_Copper_4: {
+        image: new Image(),
+        src: MP+"One Copper 4.png"
+      },
+One_Copper_5: {
+        image: new Image(),
+        src: MP+"One Copper 5.png"
+      },
+One_Copper_6: {
+        image: new Image(),
+        src: MP+"One Copper 6.png"
+      },
+One_Copper_7: {
+        image: new Image(),
+        src: MP+"One Copper 7.png"
+      },
+One_Copper_8: {
+        image: new Image(),
+        src: MP+"One Copper 8.png"
+      },
+One_Copper_9: {
+        image: new Image(),
+        src: MP+"One Copper 9.png"
+      },
+One_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 1.png"
+      },
+One_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 2.png"
+      },
+One_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 3.png"
+      },
+One_Dragon_Egg_4: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 4.png"
+      },
+One_Dragon_Egg_5: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 5.png"
+      },
+One_Dragon_Egg_6: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 6.png"
+      },
+One_Dragon_Egg_7: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 7.png"
+      },
+One_Dragon_Egg_8: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 8.png"
+      },
+One_Dragon_Egg_9: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 9.png"
+      },
+One_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 1.png"
+      },
+One_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 2.png"
+      },
+One_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 3.png"
+      },
+One_Dragon_Tear_4: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 4.png"
+      },
+One_Dragon_Tear_5: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 5.png"
+      },
+One_Dragon_Tear_6: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 6.png"
+      },
+One_Dragon_Tear_7: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 7.png"
+      },
+One_Dragon_Tear_8: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 8.png"
+      },
+One_Dragon_Tear_9: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 9.png"
+      },
+One_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 1.png"
+      },
+One_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 2.png"
+      },
+One_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 3.png"
+      },
+One_Eclipseyes_4: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 4.png"
+      },
+One_Eclipseyes_5: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 5.png"
+      },
+One_Eclipseyes_6: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 6.png"
+      },
+One_Eclipseyes_7: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 7.png"
+      },
+One_Eclipseyes_8: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 8.png"
+      },
+One_Eclipseyes_9: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 9.png"
+      },
+One_Emerald_1: {
+        image: new Image(),
+        src: MP+"One Emerald 1.png"
+      },
+One_Emerald_2: {
+        image: new Image(),
+        src: MP+"One Emerald 2.png"
+      },
+One_Emerald_3: {
+        image: new Image(),
+        src: MP+"One Emerald 3.png"
+      },
+One_Emerald_4: {
+        image: new Image(),
+        src: MP+"One Emerald 4.png"
+      },
+One_Emerald_5: {
+        image: new Image(),
+        src: MP+"One Emerald 5.png"
+      },
+One_Emerald_6: {
+        image: new Image(),
+        src: MP+"One Emerald 6.png"
+      },
+One_Emerald_7: {
+        image: new Image(),
+        src: MP+"One Emerald 7.png"
+      },
+One_Emerald_8: {
+        image: new Image(),
+        src: MP+"One Emerald 8.png"
+      },
+One_Emerald_9: {
+        image: new Image(),
+        src: MP+"One Emerald 9.png"
+      },
+One_Gold_1: {
+        image: new Image(),
+        src: MP+"One Gold 1.png"
+      },
+One_Gold_2: {
+        image: new Image(),
+        src: MP+"One Gold 2.png"
+      },
+One_Gold_3: {
+        image: new Image(),
+        src: MP+"One Gold 3.png"
+      },
+One_Gold_4: {
+        image: new Image(),
+        src: MP+"One Gold 4.png"
+      },
+One_Gold_5: {
+        image: new Image(),
+        src: MP+"One Gold 5.png"
+      },
+One_Gold_6: {
+        image: new Image(),
+        src: MP+"One Gold 6.png"
+      },
+One_Gold_7: {
+        image: new Image(),
+        src: MP+"One Gold 7.png"
+      },
+One_Gold_8: {
+        image: new Image(),
+        src: MP+"One Gold 8.png"
+      },
+One_Gold_9: {
+        image: new Image(),
+        src: MP+"One Gold 9.png"
+      },
+One_Jade_1: {
+        image: new Image(),
+        src: MP+"One Jade 1.png"
+      },
+One_Jade_2: {
+        image: new Image(),
+        src: MP+"One Jade 2.png"
+      },
+One_Jade_3: {
+        image: new Image(),
+        src: MP+"One Jade 3.png"
+      },
+One_Jade_4: {
+        image: new Image(),
+        src: MP+"One Jade 4.png"
+      },
+One_Jade_5: {
+        image: new Image(),
+        src: MP+"One Jade 5.png"
+      },
+One_Jade_6: {
+        image: new Image(),
+        src: MP+"One Jade 6.png"
+      },
+One_Jade_7: {
+        image: new Image(),
+        src: MP+"One Jade 7.png"
+      },
+One_Jade_8: {
+        image: new Image(),
+        src: MP+"One Jade 8.png"
+      },
+One_Jade_9: {
+        image: new Image(),
+        src: MP+"One Jade 9.png"
+      },
+One_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 1.png"
+      },
+One_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 2.png"
+      },
+One_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 3.png"
+      },
+One_Lapis_Lazuli_4: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 4.png"
+      },
+One_Lapis_Lazuli_5: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 5.png"
+      },
+One_Lapis_Lazuli_6: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 6.png"
+      },
+One_Lapis_Lazuli_7: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 7.png"
+      },
+One_Lapis_Lazuli_8: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 8.png"
+      },
+One_Lapis_Lazuli_9: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 9.png"
+      },
+One_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"One Peach Stone 1.png"
+      },
+One_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"One Peach Stone 2.png"
+      },
+One_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"One Peach Stone 3.png"
+      },
+One_Peach_Stone_4: {
+        image: new Image(),
+        src: MP+"One Peach Stone 4.png"
+      },
+One_Peach_Stone_5: {
+        image: new Image(),
+        src: MP+"One Peach Stone 5.png"
+      },
+One_Peach_Stone_6: {
+        image: new Image(),
+        src: MP+"One Peach Stone 6.png"
+      },
+One_Peach_Stone_7: {
+        image: new Image(),
+        src: MP+"One Peach Stone 7.png"
+      },
+One_Peach_Stone_8: {
+        image: new Image(),
+        src: MP+"One Peach Stone 8.png"
+      },
+One_Peach_Stone_9: {
+        image: new Image(),
+        src: MP+"One Peach Stone 9.png"
+      },
+One_Platnium_1: {
+        image: new Image(),
+        src: MP+"One Platnium 1.png"
+      },
+One_Platnium_2: {
+        image: new Image(),
+        src: MP+"One Platnium 2.png"
+      },
+One_Platnium_3: {
+        image: new Image(),
+        src: MP+"One Platnium 3.png"
+      },
+One_Platnium_4: {
+        image: new Image(),
+        src: MP+"One Platnium 4.png"
+      },
+One_Platnium_5: {
+        image: new Image(),
+        src: MP+"One Platnium 5.png"
+      },
+One_Platnium_6: {
+        image: new Image(),
+        src: MP+"One Platnium 6.png"
+      },
+One_Platnium_7: {
+        image: new Image(),
+        src: MP+"One Platnium 7.png"
+      },
+One_Platnium_8: {
+        image: new Image(),
+        src: MP+"One Platnium 8.png"
+      },
+One_Platnium_9: {
+        image: new Image(),
+        src: MP+"One Platnium 9.png"
+      },
+One_Powder_1: {
+        image: new Image(),
+        src: MP+"One Powder 1.png"
+      },
+One_Powder_2: {
+        image: new Image(),
+        src: MP+"One Powder 2.png"
+      },
+One_Powder_3: {
+        image: new Image(),
+        src: MP+"One Powder 3.png"
+      },
+One_Powder_4: {
+        image: new Image(),
+        src: MP+"One Powder 4.png"
+      },
+One_Powder_5: {
+        image: new Image(),
+        src: MP+"One Powder 5.png"
+      },
+One_Powder_6: {
+        image: new Image(),
+        src: MP+"One Powder 6.png"
+      },
+One_Powder_7: {
+        image: new Image(),
+        src: MP+"One Powder 7.png"
+      },
+One_Powder_8: {
+        image: new Image(),
+        src: MP+"One Powder 8.png"
+      },
+One_Powder_9: {
+        image: new Image(),
+        src: MP+"One Powder 9.png"
+      },
+One_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 1.png"
+      },
+One_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 2.png"
+      },
+One_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 3.png"
+      },
+One_Rainbow_Stone_4: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 4.png"
+      },
+One_Rainbow_Stone_5: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 5.png"
+      },
+One_Rainbow_Stone_6: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 6.png"
+      },
+One_Rainbow_Stone_7: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 7.png"
+      },
+One_Rainbow_Stone_8: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 8.png"
+      },
+One_Rainbow_Stone_9: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 9.png"
+      },
+One_Ruby_1: {
+        image: new Image(),
+        src: MP+"One Ruby 1.png"
+      },
+One_Ruby_2: {
+        image: new Image(),
+        src: MP+"One Ruby 2.png"
+      },
+One_Ruby_3: {
+        image: new Image(),
+        src: MP+"One Ruby 3.png"
+      },
+One_Ruby_4: {
+        image: new Image(),
+        src: MP+"One Ruby 4.png"
+      },
+One_Ruby_5: {
+        image: new Image(),
+        src: MP+"One Ruby 5.png"
+      },
+One_Ruby_6: {
+        image: new Image(),
+        src: MP+"One Ruby 6.png"
+      },
+One_Ruby_7: {
+        image: new Image(),
+        src: MP+"One Ruby 7.png"
+      },
+One_Ruby_8: {
+        image: new Image(),
+        src: MP+"One Ruby 8.png"
+      },
+One_Ruby_9: {
+        image: new Image(),
+        src: MP+"One Ruby 9.png"
+      },
+One_Sapphire_1: {
+        image: new Image(),
+        src: MP+"One Sapphire 1.png"
+      },
+One_Sapphire_2: {
+        image: new Image(),
+        src: MP+"One Sapphire 2.png"
+      },
+One_Sapphire_3: {
+        image: new Image(),
+        src: MP+"One Sapphire 3.png"
+      },
+One_Sapphire_4: {
+        image: new Image(),
+        src: MP+"One Sapphire 4.png"
+      },
+One_Sapphire_5: {
+        image: new Image(),
+        src: MP+"One Sapphire 5.png"
+      },
+One_Sapphire_6: {
+        image: new Image(),
+        src: MP+"One Sapphire 6.png"
+      },
+One_Sapphire_7: {
+        image: new Image(),
+        src: MP+"One Sapphire 7.png"
+      },
+One_Sapphire_8: {
+        image: new Image(),
+        src: MP+"One Sapphire 8.png"
+      },
+One_Sapphire_9: {
+        image: new Image(),
+        src: MP+"One Sapphire 9.png"
+      },
+One_Silver_1: {
+        image: new Image(),
+        src: MP+"One Silver 1.png"
+      },
+One_Silver_2: {
+        image: new Image(),
+        src: MP+"One Silver 2.png"
+      },
+One_Silver_3: {
+        image: new Image(),
+        src: MP+"One Silver 3.png"
+      },
+One_Silver_4: {
+        image: new Image(),
+        src: MP+"One Silver 4.png"
+      },
+One_Silver_5: {
+        image: new Image(),
+        src: MP+"One Silver 5.png"
+      },
+One_Silver_6: {
+        image: new Image(),
+        src: MP+"One Silver 6.png"
+      },
+One_Silver_7: {
+        image: new Image(),
+        src: MP+"One Silver 7.png"
+      },
+One_Silver_8: {
+        image: new Image(),
+        src: MP+"One Silver 8.png"
+      },
+One_Silver_9: {
+        image: new Image(),
+        src: MP+"One Silver 9.png"
+      },
+One_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 1.png"
+      },
+One_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 2.png"
+      },
+One_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 3.png"
+      },
+One_Sunshine_Stone_4: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 4.png"
+      },
+One_Sunshine_Stone_5: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 5.png"
+      },
+One_Sunshine_Stone_6: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 6.png"
+      },
+One_Sunshine_Stone_7: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 7.png"
+      },
+One_Sunshine_Stone_8: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 8.png"
+      },
+One_Sunshine_Stone_9: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 9.png"
+      },
+One_Sunstone_1: {
+        image: new Image(),
+        src: MP+"One Sunstone 1.png"
+      },
+One_Sunstone_2: {
+        image: new Image(),
+        src: MP+"One Sunstone 2.png"
+      },
+One_Sunstone_3: {
+        image: new Image(),
+        src: MP+"One Sunstone 3.png"
+      },
+One_Sunstone_4: {
+        image: new Image(),
+        src: MP+"One Sunstone 4.png"
+      },
+One_Sunstone_5: {
+        image: new Image(),
+        src: MP+"One Sunstone 5.png"
+      },
+One_Sunstone_6: {
+        image: new Image(),
+        src: MP+"One Sunstone 6.png"
+      },
+One_Sunstone_7: {
+        image: new Image(),
+        src: MP+"One Sunstone 7.png"
+      },
+One_Sunstone_8: {
+        image: new Image(),
+        src: MP+"One Sunstone 8.png"
+      },
+One_Sunstone_9: {
+        image: new Image(),
+        src: MP+"One Sunstone 9.png"
+      },
+One_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"One Tanzanite 1.png"
+      },
+One_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"One Tanzanite 2.png"
+      },
+One_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"One Tanzanite 3.png"
+      },
+One_Tanzanite_4: {
+        image: new Image(),
+        src: MP+"One Tanzanite 4.png"
+      },
+One_Tanzanite_5: {
+        image: new Image(),
+        src: MP+"One Tanzanite 5.png"
+      },
+One_Tanzanite_6: {
+        image: new Image(),
+        src: MP+"One Tanzanite 6.png"
+      },
+One_Tanzanite_7: {
+        image: new Image(),
+        src: MP+"One Tanzanite 7.png"
+      },
+One_Tanzanite_8: {
+        image: new Image(),
+        src: MP+"One Tanzanite 8.png"
+      },
+One_Tanzanite_9: {
+        image: new Image(),
+        src: MP+"One Tanzanite 9.png"
+      },
+One_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 1.png"
+      },
+One_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 2.png"
+      },
+One_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 3.png"
+      },
+One_Unicorn_Tear_4: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 4.png"
+      },
+One_Unicorn_Tear_5: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 5.png"
+      },
+One_Unicorn_Tear_6: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 6.png"
+      },
+One_Unicorn_Tear_7: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 7.png"
+      },
+One_Unicorn_Tear_8: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 8.png"
+      },
+One_Unicorn_Tear_9: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 9.png"
+      },
+Some_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Some Amethyst 1.png"
+      },
+Some_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Some Amethyst 2.png"
+      },
+Some_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Some Amethyst 3.png"
+      },
+Some_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Some Carnelian 1.png"
+      },
+Some_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Some Carnelian 2.png"
+      },
+Some_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Some Carnelian 3.png"
+      },
+Some_Citrine_1: {
+        image: new Image(),
+        src: MP+"Some Citrine 1.png"
+      },
+Some_Citrine_2: {
+        image: new Image(),
+        src: MP+"Some Citrine 2.png"
+      },
+Some_Citrine_3: {
+        image: new Image(),
+        src: MP+"Some Citrine 3.png"
+      },
+Some_Coal_1: {
+        image: new Image(),
+        src: MP+"Some Coal 1.png"
+      },
+Some_Coal_2: {
+        image: new Image(),
+        src: MP+"Some Coal 2.png"
+      },
+Some_Coal_3: {
+        image: new Image(),
+        src: MP+"Some Coal 3.png"
+      },
+Some_Copper_1: {
+        image: new Image(),
+        src: MP+"Some Copper 1.png"
+      },
+Some_Copper_2: {
+        image: new Image(),
+        src: MP+"Some Copper 2.png"
+      },
+Some_Copper_3: {
+        image: new Image(),
+        src: MP+"Some Copper 3.png"
+      },
+Some_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 1.png"
+      },
+Some_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 2.png"
+      },
+Some_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 3.png"
+      },
+Some_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 1.png"
+      },
+Some_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 2.png"
+      },
+Some_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 3.png"
+      },
+Some_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 1.png"
+      },
+Some_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 2.png"
+      },
+Some_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 3.png"
+      },
+Some_Emerald_1: {
+        image: new Image(),
+        src: MP+"Some Emerald 1.png"
+      },
+Some_Emerald_2: {
+        image: new Image(),
+        src: MP+"Some Emerald 2.png"
+      },
+Some_Emerald_3: {
+        image: new Image(),
+        src: MP+"Some Emerald 3.png"
+      },
+Some_Gold_1: {
+        image: new Image(),
+        src: MP+"Some Gold 1.png"
+      },
+Some_Gold_2: {
+        image: new Image(),
+        src: MP+"Some Gold 2.png"
+      },
+Some_Gold_3: {
+        image: new Image(),
+        src: MP+"Some Gold 3.png"
+      },
+Some_Jade_1: {
+        image: new Image(),
+        src: MP+"Some Jade 1.png"
+      },
+Some_Jade_2: {
+        image: new Image(),
+        src: MP+"Some Jade 2.png"
+      },
+Some_Jade_3: {
+        image: new Image(),
+        src: MP+"Some Jade 3.png"
+      },
+Some_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 1.png"
+      },
+Some_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 2.png"
+      },
+Some_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 3.png"
+      },
+Some_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 1.png"
+      },
+Some_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 2.png"
+      },
+Some_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 3.png"
+      },
+Some_Platnium_1: {
+        image: new Image(),
+        src: MP+"Some Platnium 1.png"
+      },
+Some_Platnium_2: {
+        image: new Image(),
+        src: MP+"Some Platnium 2.png"
+      },
+Some_Platnium_3: {
+        image: new Image(),
+        src: MP+"Some Platnium 3.png"
+      },
+Some_Powder_1: {
+        image: new Image(),
+        src: MP+"Some Powder 1.png"
+      },
+Some_Powder_2: {
+        image: new Image(),
+        src: MP+"Some Powder 2.png"
+      },
+Some_Powder_3: {
+        image: new Image(),
+        src: MP+"Some Powder 3.png"
+      },
+Some_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 1.png"
+      },
+Some_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 2.png"
+      },
+Some_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 3.png"
+      },
+Some_Ruby_1: {
+        image: new Image(),
+        src: MP+"Some Ruby 1.png"
+      },
+Some_Ruby_2: {
+        image: new Image(),
+        src: MP+"Some Ruby 2.png"
+      },
+Some_Ruby_3: {
+        image: new Image(),
+        src: MP+"Some Ruby 3.png"
+      },
+Some_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Some Sapphire 1.png"
+      },
+Some_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Some Sapphire 2.png"
+      },
+Some_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Some Sapphire 3.png"
+      },
+Some_Silver_1: {
+        image: new Image(),
+        src: MP+"Some Silver 1.png"
+      },
+Some_Silver_2: {
+        image: new Image(),
+        src: MP+"Some Silver 2.png"
+      },
+Some_Silver_3: {
+        image: new Image(),
+        src: MP+"Some Silver 3.png"
+      },
+Some_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 1.png"
+      },
+Some_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 2.png"
+      },
+Some_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 3.png"
+      },
+Some_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Some Sunstone 1.png"
+      },
+Some_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Some Sunstone 2.png"
+      },
+Some_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Some Sunstone 3.png"
+      },
+Some_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 1.png"
+      },
+Some_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 2.png"
+      },
+Some_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 3.png"
+      },
+Some_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 1.png"
+      },
+Some_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 2.png"
+      },
+Some_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 3.png"
+      },
+Tons_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 1.png"
+      },
+Tons_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 2.png"
+      },
+Tons_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 3.png"
+      },
+Tons_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 1.png"
+      },
+Tons_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 2.png"
+      },
+Tons_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 3.png"
+      },
+Tons_Citrine_1: {
+        image: new Image(),
+        src: MP+"Tons Citrine 1.png"
+      },
+Tons_Citrine_2: {
+        image: new Image(),
+        src: MP+"Tons Citrine 2.png"
+      },
+Tons_Citrine_3: {
+        image: new Image(),
+        src: MP+"Tons Citrine 3.png"
+      },
+Tons_Coal_1: {
+        image: new Image(),
+        src: MP+"Tons Coal 1.png"
+      },
+Tons_Coal_2: {
+        image: new Image(),
+        src: MP+"Tons Coal 2.png"
+      },
+Tons_Coal_3: {
+        image: new Image(),
+        src: MP+"Tons Coal 3.png"
+      },
+Tons_Copper_1: {
+        image: new Image(),
+        src: MP+"Tons Copper 1.png"
+      },
+Tons_Copper_2: {
+        image: new Image(),
+        src: MP+"Tons Copper 2.png"
+      },
+Tons_Copper_3: {
+        image: new Image(),
+        src: MP+"Tons Copper 3.png"
+      },
+Tons_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 1.png"
+      },
+Tons_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 2.png"
+      },
+Tons_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 3.png"
+      },
+Tons_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 1.png"
+      },
+Tons_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 2.png"
+      },
+Tons_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 3.png"
+      },
+Tons_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 1.png"
+      },
+Tons_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 2.png"
+      },
+Tons_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 3.png"
+      },
+Tons_Emerald_1: {
+        image: new Image(),
+        src: MP+"Tons Emerald 1.png"
+      },
+Tons_Emerald_2: {
+        image: new Image(),
+        src: MP+"Tons Emerald 2.png"
+      },
+Tons_Emerald_3: {
+        image: new Image(),
+        src: MP+"Tons Emerald 3.png"
+      },
+Tons_Gold_1: {
+        image: new Image(),
+        src: MP+"Tons Gold 1.png"
+      },
+Tons_Gold_2: {
+        image: new Image(),
+        src: MP+"Tons Gold 2.png"
+      },
+Tons_Gold_3: {
+        image: new Image(),
+        src: MP+"Tons Gold 3.png"
+      },
+Tons_Jade_1: {
+        image: new Image(),
+        src: MP+"Tons Jade 1.png"
+      },
+Tons_Jade_2: {
+        image: new Image(),
+        src: MP+"Tons Jade 2.png"
+      },
+Tons_Jade_3: {
+        image: new Image(),
+        src: MP+"Tons Jade 3.png"
+      },
+Tons_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 1.png"
+      },
+Tons_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 2.png"
+      },
+Tons_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 3.png"
+      },
+Tons_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 1.png"
+      },
+Tons_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 2.png"
+      },
+Tons_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 3.png"
+      },
+Tons_Platnium_1: {
+        image: new Image(),
+        src: MP+"Tons Platnium 1.png"
+      },
+Tons_Platnium_2: {
+        image: new Image(),
+        src: MP+"Tons Platnium 2.png"
+      },
+Tons_Platnium_3: {
+        image: new Image(),
+        src: MP+"Tons Platnium 3.png"
+      },
+Tons_Powder_1: {
+        image: new Image(),
+        src: MP+"Tons Powder 1.png"
+      },
+Tons_Powder_2: {
+        image: new Image(),
+        src: MP+"Tons Powder 2.png"
+      },
+Tons_Powder_3: {
+        image: new Image(),
+        src: MP+"Tons Powder 3.png"
+      },
+Tons_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 1.png"
+      },
+Tons_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 2.png"
+      },
+Tons_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 3.png"
+      },
+Tons_Ruby_1: {
+        image: new Image(),
+        src: MP+"Tons Ruby 1.png"
+      },
+Tons_Ruby_2: {
+        image: new Image(),
+        src: MP+"Tons Ruby 2.png"
+      },
+Tons_Ruby_3: {
+        image: new Image(),
+        src: MP+"Tons Ruby 3.png"
+      },
+Tons_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 1.png"
+      },
+Tons_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 2.png"
+      },
+Tons_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 3.png"
+      },
+Tons_Silver_1: {
+        image: new Image(),
+        src: MP+"Tons Silver 1.png"
+      },
+Tons_Silver_2: {
+        image: new Image(),
+        src: MP+"Tons Silver 2.png"
+      },
+Tons_Silver_3: {
+        image: new Image(),
+        src: MP+"Tons Silver 3.png"
+      },
+Tons_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 1.png"
+      },
+Tons_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 2.png"
+      },
+Tons_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 3.png"
+      },
+Tons_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 1.png"
+      },
+Tons_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 2.png"
+      },
+Tons_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 3.png"
+      },
+Tons_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 1.png"
+      },
+Tons_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 2.png"
+      },
+Tons_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 3.png"
+      },
+Tons_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 1.png"
+      },
+Tons_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 2.png"
+      },
+Tons_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 3.png"
+      },
+
+      // If you add more mineral types, do so here
+    };
+
+    // Load all tile images
+    let imagesToLoad = 0;
+    function loadImages(callback) {
+      for (let type in tileTypes) {
+        imagesToLoad++;
+        tileTypes[type].image.src = tileTypes[type].src;
+        tileTypes[type].image.onload = () => {
+          imagesToLoad--;
+          if (imagesToLoad === 0) callback();
+        };
+        tileTypes[type].image.onerror = () => {
+          console.error(`Failed to load tile image: ${tileTypes[type].src}`);
+          document.getElementById('loading').innerText = `Failed to load tile image: ${tileTypes[type].src}`;
+        };
+      }
+
+      for (let type in mineralTypes) {
+        imagesToLoad++;
+        mineralTypes[type].image.src = mineralTypes[type].src;
+        mineralTypes[type].image.onload = () => {
+          imagesToLoad--;
+          if (imagesToLoad === 0) callback();
+        };
+        mineralTypes[type].image.onerror = () => {
+          console.error(`Failed to load mineral image: ${mineralTypes[type].src}`);
+          document.getElementById('loading').innerText = `Failed to load mineral image: ${mineralTypes[type].src}`;
+        };
+      }
+    }
+
+    // Adjusted values
+    let allChunks = [];
+    let size = 80;                  // The size of each tile in pixels
+    let currentTileToDestroy = 255; // Because each chunk has 256 tiles
+    let shouldMove = false;
+    let removeTimer = 0;
+    let LayersRemoved = 0
+    let NumOfLayers = 16
+    let TilesDestroyed = 0
+    // Utility: randomly select a tile type
+    function getRandomTileType() {
+      const keys = Object.keys(tileTypes);
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    // Utility: randomly select a mineral type or null
+    function getRandomMineralType() {
+      const chance = Math.random();
+      
+        const keys = Object.keys(mineralTypes);
+        return keys[Math.floor(Math.random() * keys.length)];
+      
+      return null;
+    }
+
+    /**
+     * makeNewChunk
+     * Creates one chunk with 4 quadrants, each quadrant has 64 tiles (8×8),
+     * for a total of 256 tiles per chunk.
+     */
+    function makeNewChunk(baseX, baseY) {
+      let chunkTiles = [];
+
+      // Distances used for isometric offsets
+      const distX = size * 0.56;
+      const distY = size * 0.25;
+
+      // Offsets for each quadrant
+      const leftOffset = size * 4.5;     // Slightly bigger offset to space out the quadrants
+      const verticalOffset = size * 2; // Quadrants stacked vertically more
+
+      // 4 quadrants
+      for (let group = 0; group < 4; group++) {
+        let groupX = baseX;
+        let groupY = baseY;
+
+        // Decide where to place each quadrant relative to baseX, baseY
+        if (group === 1) {
+          groupX += leftOffset;
+          groupY += verticalOffset;
+        } else if (group === 2) {
+          groupX -= leftOffset;
+          groupY += verticalOffset;
+        } else if (group === 3) {
+          groupY += verticalOffset * 2;
+        }
+
+        // For each quadrant, we make 8×8 = 64 tiles in a “diamond” layout
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            // Calculate tileX, tileY in an isometric style
+            const tileX = groupX + (col - row) * distX;
+            const tileY = groupY + (row + col) * distY;
+
+            // Decide tile type, possible mineral
+            const tileType = getRandomTileType();
+            const mineralType = (Math.random() < .3) ? getRandomMineralType() : null;
+
+            // Store row & col so we can decide later if we want to draw it
+            chunkTiles.push({
+              x: tileX,
+              y: tileY,
+              row: row,
+              col: col,
+              group: group,
+              alive: true,
+              tileType: tileType,
+              mineralType: mineralType
+            });
+          }
+        }
+      }
+      return chunkTiles;
+    }
+
+    // Draw a single tile
+    function drawTile(tile) {
+      const tileImg = tileTypes[tile.tileType].image;
+      ctx.drawImage(tileImg, tile.x, tile.y, size, size);
+
+      // Draw the mineral image on top if present
+      if (tile.mineralType) {
+        const mineralImg = mineralTypes[tile.mineralType].image;
+        ctx.drawImage(mineralImg, tile.x, tile.y, size, size);
+      }
+    }
+
+    /**
+     * Decide if a tile should be drawn, according to your “top two + perimeter” rule.
+     * row=0 is top edge in that quadrant, row=7 is bottom edge; same for col=0..7.
+     */
+    function shouldDrawThisTile(tile) {
+      const r = tile.row;
+      const c = tile.col;
+
+      // "Top two" means row <= 1. 
+      // "Outside edges" means row=0 or row=7 or col=0 or col=7.
+      // You can tweak this logic as desired:
+      
+      if (r === 7 ) return true; // top/bottom perimeter
+      if (c === 7 ) return true; // left/right perimeter
+
+      // Otherwise skip
+      return false;
+    }
+
+    // Prepare the initial set of chunks
+    function setupInitialChunks(NumOfLayersAlreadyGenerated) {
+      allChunks = [];
+      // 16 chunks “stacked” (you had 32 in your original, adjust as needed)
+      for (let i = NumOfLayersAlreadyGenerated; i < NumOfLayers; i++) {
+        const chunk = makeNewChunk(
+          $(window).width() / 2,
+          (i * (size / 2)) + size / 2
+        );
+        allChunks.unshift(chunk);
+      }
+    }
+
+    /**
+     * removeTopTiles
+     * Removes a given number of tiles from the top chunk (the last chunk in allChunks).
+     * Once a chunk is completely destroyed, triggers shouldMove = true to shift.
+     */
+    function removeTopTiles(howManyTiles) {
+      if (allChunks.length === 0) return;
+
+      let topChunk = allChunks[allChunks.length - 1];
+removeTimerMax = 2;
+      removeTimer++;
+      if (removeTimer >= removeTimerMax) {
+        let counter = 0;
+        while (counter < howManyTiles) {
+          removeTimer = 0;
+
+          if (currentTileToDestroy >= 0) {
+            if (topChunk[currentTileToDestroy]) {
+              for(i = 255;i >= currentTileToDestroy;i--){
+              topChunk[i].alive = false;
+              }
+              console.log(`Destroyed tile ${currentTileToDestroy} in chunk ${allChunks.length - 1}`);
+              currentTileToDestroy--;
+              TilesDestroyed++
+            }
+            $('.Layer').html("Layer "+LayersRemoved+"</br></br>Tile "+TilesDestroyed)
+            if (currentTileToDestroy < 0) {
+              LayersRemoved++
+              
+              shouldMove = true;
+              currentTileToDestroy = 255; // Reset to last index for a 256-tile chunk
+            }
+          }
+          counter++;
+        }
+      }
+    }
+
+    /**
+     * moveChunksUp
+     * Moves all chunk tiles upward by size/2 after the topmost chunk is fully destroyed,
+     * and adds a new chunk at the bottom.
+     */
+    function moveChunksUp() {
+      if (!shouldMove) return;
+
+      // Move existing chunks up
+      for (let chunk of allChunks) {
+        for (let tile of chunk) {
+          tile.y -= size / 2;
+        }
+      }
+
+      // Remove the topmost chunk (it's all destroyed)
+      allChunks.pop();
+
+      // Add a fresh chunk at the bottom
+      const firstChunk = allChunks[0];
+      const newY = firstChunk[0].y + size / 2;
+      const newChunk = makeNewChunk($(window).width() / 2, newY);
+      allChunks.unshift(newChunk);
+
+      // Reset
+      shouldMove = false;
+      JustMoved = true;
+    }
+
+    // Click to destroy a tile manually
+    canvas.addEventListener("click", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      for (let chunk of allChunks) {
+        for (let tile of chunk) {
+          if (
+            tile.alive &&
+            mouseX > tile.x && mouseX < tile.x + size &&
+            mouseY > tile.y && mouseY < tile.y + size
+          ) {
+            tile.alive = false;
+            console.log(`Tile destroyed at (${tile.x}, ${tile.y})`);
+            return;
+          }
+        }
+      }
+    });
+let pSize = size;
+    // Main loop
+    function animate(OneTime = true) {
+      if(pSize != size){
+        pSize = size
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      ctx.clearRect(0, 0, canvas.width, size *6 );
+
+      // Destroy a bunch of tiles from the top chunk
+      removeTopTiles(1);
+
+      // Shift up if the top chunk is fully destroyed
+      moveChunksUp();
+chunkcount = 0
+      // Draw only the tiles that qualify
+      for (let chunk of allChunks) {
+        chunkcount++
+        for (let tile of chunk) {
+          if (!tile.alive) continue;
+          if (shouldDrawThisTile(tile) && JustMoved ) {
+            
+            drawTile(tile);
+          }
+          if(chunkcount > allChunks.length-2){
+            drawTile(tile);
+          } 
+        }
+      }
+  JustMoved = false
+  if(OneTime){
+      requestAnimationFrame(animate);
+      }
+    }
+
+    // Start up
+    function startAnimation() {
+      document.getElementById('loading').style.display = 'none';
+      JustMoved = true
+      setupInitialChunks(1);
+      animate();
+    }
+
+    // Load images, then begin
+    loadImages(() => {
+      console.log("All images loaded successfully.");
+      startAnimation();
+    });
+function saveImagesArray() {
+  // Returns an array-of-arrays of image attributes for each chunk's tiles
+  return allChunks.map(chunk => 
+    chunk.map(tile => ({
+      tileType: tile.tileType,
+      mineralType: tile.mineralType,
+    }))
+  );
+}
+
+function applyImagesArray(imagesArray) {
+  // Find the highest chunk index in the saved data
+  const savedMaxChunkIndex = imagesArray.length - 1;
+  // Find the highest chunk index in the current game
+  const currentMaxChunkIndex = allChunks.length - 1;
+  
+  // Start from the highest chunk and work downwards
+  for (let savedIndex = savedMaxChunkIndex; savedIndex >= 0; savedIndex--) {
+    // Calculate where this chunk should go in the current game
+    // For example, if we have more chunks now than in the save,
+    // we want to place the highest saved chunk at the highest current position
+    const targetIndex = currentMaxChunkIndex - (savedMaxChunkIndex - savedIndex);
+    
+    // Skip if the target index would be negative
+    if (targetIndex < 0) continue;
+    
+    // Skip if the chunk doesn't exist in either array
+    if (!imagesArray[savedIndex] || !allChunks[targetIndex]) continue;
+
+    // Apply the data to each tile in the chunk
+    allChunks[targetIndex].forEach((tile, tileIndex) => {
+      if (!imagesArray[savedIndex][tileIndex]) return;
+
+      tile.tileType = imagesArray[savedIndex][tileIndex].tileType;
+      tile.mineralType = imagesArray[savedIndex][tileIndex].mineralType;
+    });
+  }
+}
+
+$(document).on('wheel mousewheel', function(event) {
+    var delta;
+    
+    // Normalize delta for cross-browser support
+    if (event.originalEvent.wheelDelta) {
+        delta = event.originalEvent.wheelDelta; // For most browsers (positive or negative)
+    } else {
+        delta = -event.originalEvent.deltaY; // For Firefox
+    }
+
+    if (delta > 0) {
+      if(size < 90){
+       size = size * 1.1
+        imagesArray = saveImagesArray()
+        NumOfLayers = $('.TileContainer').height()/size * 2 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      }
+    } else {
+      if(size > 8){
+       size = size * .9
+        imagesArray = saveImagesArray()
+        NumOfLayers = $('.TileContainer').height()/size * 2 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      }
+    }
+});
+$(document).ready(function() {
+    // Create the "View" div
+    $('body').append('<div id="viewDiv">View</div>');
+    
+    // Define each button's behavior here
+    let buttonActions = [
+      () => {
+        size = 15
+        imagesArray = saveImagesArray()
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      },
+      () => {
+ size = 25
+        imagesArray = saveImagesArray()
+        PreviousNumOfLayers = NumOfLayers
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      },
+      () => {
+size = 50
+        imagesArray = saveImagesArray()
+        PreviousNumOfLayers = NumOfLayers
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      },
+      () => {
+size = 80
+        imagesArray = saveImagesArray()
+        PreviousNumOfLayers = NumOfLayers
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      },
+      () => {
+size = 100
+        imagesArray = saveImagesArray()
+        PreviousNumOfLayers = NumOfLayers
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      }
+    ];
+
+    // Create and place 5 buttons with absolute positioning
+    for (let i = 1; i <= 5; i++) {
+      // Make a new button
+      const $btn = $('<button class="myButton">' + i + '</button>');
+      
+      // Position each button horizontally below "View"
+      // Adjust top/left values to your preference
+      $btn.css({
+        top: '70px',
+        left: (20 + (i - 1) * 60) + 'px'
+      });
+      
+      // Attach the click handler from our array
+      $btn.on('click', buttonActions[i - 1]);
+      
+      // Add the button to the page
+      $('body').append($btn);
+    }
+  });
+
+  </script>
+</body>
+</html>

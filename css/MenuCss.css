@@ -1,0 +1,103 @@
+
+.circlebtnspan{
+  z-index: 500;
+
+}
+    /* BREADCRUMBS */
+    #breadcrumb-container {
+      z-index: 500;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 999;
+    }
+    .breadcrumb-button {
+      z-index: 500;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 12px 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      min-width: 80px;
+      width:300px;
+    }
+    .breadcrumb-button:hover {
+      z-index: 500;
+      background-color: #e6e6e6;
+    }
+    .breadcrumb-button img {
+      z-index: 500;
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+    }
+
+    /* CIRCLES CONTAINER */
+    #circles {
+      z-index: 500;
+      position: absolute;
+      top: 45%;
+      left: 0;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: row;
+      gap: 100px;
+      padding-left: 200px;
+    }
+    .circle-wrapper {
+      z-index: 500;
+      position: relative;
+      width: 500px;
+      height: 600px;
+      
+      overflow: visible;
+    }
+    .circle-wrapper:last-of-type {
+      z-index: 500;
+      position: relative;
+      width: 500px;
+      height: 600px;
+      margin-left:-130px;
+      
+      overflow: visible;
+    }
+
+    /* BUTTONS IN THE CIRCLES */
+    .circle-btn {
+      z-index: 500;
+        
+width:"250px";
+height:"100px";
+margin-left:20px;
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      overflow:visable;
+      transition: background-color 0.3s;
+    }
+    .circle-btn:hover {
+      z-index: 500;
+      background-color: #eee;
+    }
+    .circle-btn img {
+      z-index: 500;
+      width: 157px;
+      height: 157px;
+      position:absolute;
+      margin-left:-205px;
+      margin-right: 8px;
+    }
+    .main-position {
+      z-index: 500;
+      border-color: #007bff;
+      background-color: #cce5ff;
+    }

@@ -1,116 +1,3609 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tile Destroy Game</title>
+  <title>Tile Destroy Game (4 Quadrants × 64 Tiles = 256)</title>
+  <link rel="stylesheet" href="css/MenuCss.css" />
+  <style>
+/* Style for the "View" div */
+    #viewDiv {
+      z-index: 1;
+      position: absolute;
+      top: 10px;
+      left: 125px;
+      /* Gradient background */
+      background: linear-gradient(to right, #3498db, #8e44ad);
+      color: #fff;
+			border:2px solid black;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    /* Style for each button */
+    .myButton {
+      z-index: 1;
+      position: absolute;
+      /* Gradient background */
+      background: linear-gradient(to right, yellow, white);
+      background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+  background-repeat: repeat; /* This makes the image tile */
+  background-size: 55px; /* Ensures the image uses its original size */
+			border:3px solid black;
+      border-radius: 8px;
+      
+      color: white;
+			font-weight:1000;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 28px;
+      transition: opacity 0.2s ease-in-out;
+      opacity: 0.3;
+    }
+
+    .myButton:hover {
+      z-index: 1;
+      opacity: 1;
+      text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+    }
+    .lastClickedView{
+      z-index: 1;
+  opacity:1;
+}
+    body, html {
+      z-index: 1;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+ background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+  background-repeat: repeat; /* This makes the image tile */
+  background-size: auto; /* Ensures the image uses its original size */
+    }
+    #loading {
+      z-index: 1;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      color: #333;
+    }
+    canvas {
+      z-index: 1;
+      display: block;
+      position:fixed;
+    }
+      
+
+        .Layer {
+          z-index: 1;
+            background: linear-gradient(to bottom, #e0c097, #000000);
+              background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+  background-repeat: repeat; /* This makes the image tile */
+  background-size: 155px; /* Ensures the image uses its original size */
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.9);
+            top:15px;
+        }
+
+        .Layer:before, .Layer:after {
+          z-index: 1;
+            content: '';
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            top: -100%;
+            left: -100%;
+            
+        }
+
+        .Layer:after {
+          z-index: 1;
+            animation-delay: 3s;
+        }
+
+
+        .border-light {
+          z-index: 1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            
+            border-radius: 15px;
+            box-sizing: border-box;
+            animation: borderAnimation 4s linear infinite;
+        }
+.TileContainer{
+  position:fixed;
+  z-index: 1;
+}
+        @keyframes borderAnimation {
+          
+            0% {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                border-color: rgba(255, 255, 255, 0.8);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            }
+            100% {
+                border-color: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+          <script src="js/MenuJs.js"></script>
 </head>
 <body>
 
-<script>
-/******************************************************
-  Efficiently draw thousands of tiles using canvas
-  Each tile is destroyable on click, without affecting tiles beneath
-******************************************************/
+<div id="breadcrumb-container"></div>
 
-// 1. Create a canvas dynamically
-const canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-const ctx = canvas.getContext("2d");
+<div id="circles">
+  <div class="circle-wrapper" id="first-circle"></div>
+  <div class="circle-wrapper" id="second-circle"></div>
+</div>
+<div class="Layer" style="position:absolute;top:15px;right:200px;width:130px;height:60px;"> Layer 0</div>
+  <div id="loading">Loading game assets...</div>
+  <div class="TileContainer"><canvas class="CanvasContainer"></canvas></div>
+  
+  <script>
+$(document).ready(function(){
+    const canvas = $('.CanvasContainer')[0];
+    const ctx = canvas.getContext("2d");
+    $('.TileContainer').width($(window).width());
+    $('.TileContainer').height($(window).height());
+    $(window).resize(function(){
+      $('.TileContainer').width($(window).width());
+      $('.TileContainer').height($(window).height());
+      imagesArray = saveImagesArray()
+        PreviousNumOfLayers = NumOfLayers
+        NumOfLayers = $('.TileContainer').height()/size * 2
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+    })
+    function resizeCanvas() {
+      canvas.width = $(".TileContainer").width();
+      canvas.height = $(".TileContainer").height();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  let TP = "img/High Qualikty Tiles/"
+  let MP = "img/Minerals/256/"
+  let MPBG = "img/Minerals/256 w bg/"
+    // Define tile types with their image sources
+    const tileTypes = {
+      
+    Dirt_1: {
+        image: new Image(),
+        src: TP + "Dirt 1 512.png"
+    },
+    Dirt_2: {
+        image: new Image(),
+        src: TP + "Dirt 2 512.png"
+    },
+    Dirt_3: {
+        image: new Image(),
+        src: TP + "Dirt 3 512.png"
+    },
+    Dirt_4: {
+        image: new Image(),
+        src: TP + "Dirt 4 512.png"
+    },
+    Dirt_5: {
+        image: new Image(),
+        src: TP + "Dirt 5 512.png"
+    },
+    Ice: {
+        image: new Image(),
+        src: TP + "Ice 512.png"
+    },
+    Magma: {
+        image: new Image(),
+        src: TP + "Magma 512.png"
+    },
+    Metal: {
+        image: new Image(),
+        src: TP + "Metal 512.png"
+    },
+    Rock: {
+        image: new Image(),
+        src: TP + "Rock 512.png"
+    },
+    Snow: {
+        image: new Image(),
+        src: TP + "Snow 512.png"
+    },
+    Stone_1: {
+        image: new Image(),
+        src: TP + "Stone 1 512.png"
+    },
+    Water: {
+        image: new Image(),
+        src: TP + "Water 512.png"
+    },
+    Wood: {
+        image: new Image(),
+        src: TP + "Wood 512.png"
+    }
 
-// 2. Resize the canvas to fill the window
-function resizeCanvas() {
-  canvas.width = 5000;
-  canvas.height = 5000;
+
+      // If you add more tile types, do so here
+    };
+
+    // Define mineral types with their image sources
+    const mineralTypes = {
+     Few_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Few Amethyst 1.png"
+      },
+Few_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Few Amethyst 2.png"
+      },
+Few_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Few Amethyst 3.png"
+      },
+Few_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Few Carnelian 1.png"
+      },
+Few_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Few Carnelian 2.png"
+      },
+Few_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Few Carnelian 3.png"
+      },
+Few_Citrine_1: {
+        image: new Image(),
+        src: MP+"Few Citrine 1.png"
+      },
+Few_Citrine_2: {
+        image: new Image(),
+        src: MP+"Few Citrine 2.png"
+      },
+Few_Citrine_3: {
+        image: new Image(),
+        src: MP+"Few Citrine 3.png"
+      },
+Few_Coal_1: {
+        image: new Image(),
+        src: MP+"Few Coal 1.png"
+      },
+Few_Coal_2: {
+        image: new Image(),
+        src: MP+"Few Coal 2.png"
+      },
+Few_Coal_3: {
+        image: new Image(),
+        src: MP+"Few Coal 3.png"
+      },
+Few_Copper_1: {
+        image: new Image(),
+        src: MP+"Few Copper 1.png"
+      },
+Few_Copper_2: {
+        image: new Image(),
+        src: MP+"Few Copper 2.png"
+      },
+Few_Copper_3: {
+        image: new Image(),
+        src: MP+"Few Copper 3.png"
+      },
+Few_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 1.png"
+      },
+Few_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 2.png"
+      },
+Few_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Few Dragon Egg 3.png"
+      },
+Few_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 1.png"
+      },
+Few_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 2.png"
+      },
+Few_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Few Dragon Tear 3.png"
+      },
+Few_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 1.png"
+      },
+Few_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 2.png"
+      },
+Few_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Few Eclipseyes 3.png"
+      },
+Few_Emerald_1: {
+        image: new Image(),
+        src: MP+"Few Emerald 1.png"
+      },
+Few_Emerald_2: {
+        image: new Image(),
+        src: MP+"Few Emerald 2.png"
+      },
+Few_Emerald_3: {
+        image: new Image(),
+        src: MP+"Few Emerald 3.png"
+      },
+Few_Gold_1: {
+        image: new Image(),
+        src: MP+"Few Gold 1.png"
+      },
+Few_Gold_2: {
+        image: new Image(),
+        src: MP+"Few Gold 2.png"
+      },
+Few_Gold_3: {
+        image: new Image(),
+        src: MP+"Few Gold 3.png"
+      },
+Few_Jade_1: {
+        image: new Image(),
+        src: MP+"Few Jade 1.png"
+      },
+Few_Jade_2: {
+        image: new Image(),
+        src: MP+"Few Jade 2.png"
+      },
+Few_Jade_3: {
+        image: new Image(),
+        src: MP+"Few Jade 3.png"
+      },
+Few_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 1.png"
+      },
+Few_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 2.png"
+      },
+Few_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Few Lapis Lazuli 3.png"
+      },
+Few_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 1.png"
+      },
+Few_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 2.png"
+      },
+Few_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Peach Stone 3.png"
+      },
+Few_Platnium_1: {
+        image: new Image(),
+        src: MP+"Few Platnium 1.png"
+      },
+Few_Platnium_2: {
+        image: new Image(),
+        src: MP+"Few Platnium 2.png"
+      },
+Few_Platnium_3: {
+        image: new Image(),
+        src: MP+"Few Platnium 3.png"
+      },
+Few_Powder_1: {
+        image: new Image(),
+        src: MP+"Few Powder 1.png"
+      },
+Few_Powder_2: {
+        image: new Image(),
+        src: MP+"Few Powder 2.png"
+      },
+Few_Powder_3: {
+        image: new Image(),
+        src: MP+"Few Powder 3.png"
+      },
+Few_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 1.png"
+      },
+Few_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 2.png"
+      },
+Few_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Rainbow Stone 3.png"
+      },
+Few_Ruby_1: {
+        image: new Image(),
+        src: MP+"Few Ruby 1.png"
+      },
+Few_Ruby_2: {
+        image: new Image(),
+        src: MP+"Few Ruby 2.png"
+      },
+Few_Ruby_3: {
+        image: new Image(),
+        src: MP+"Few Ruby 3.png"
+      },
+Few_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Few Sapphire 1.png"
+      },
+Few_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Few Sapphire 2.png"
+      },
+Few_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Few Sapphire 3.png"
+      },
+Few_Silver_1: {
+        image: new Image(),
+        src: MP+"Few Silver 1.png"
+      },
+Few_Silver_2: {
+        image: new Image(),
+        src: MP+"Few Silver 2.png"
+      },
+Few_Silver_3: {
+        image: new Image(),
+        src: MP+"Few Silver 3.png"
+      },
+Few_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 1.png"
+      },
+Few_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 2.png"
+      },
+Few_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Few Sunshine Stone 3.png"
+      },
+Few_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Few Sunstone 1.png"
+      },
+Few_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Few Sunstone 2.png"
+      },
+Few_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Few Sunstone 3.png"
+      },
+Few_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 1.png"
+      },
+Few_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 2.png"
+      },
+Few_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Few Tanzanite 3.png"
+      },
+Few_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 1.png"
+      },
+Few_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 2.png"
+      },
+Few_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Few Unicorn Tear 3.png"
+      },
+Lots_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 1.png"
+      },
+Lots_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 2.png"
+      },
+Lots_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Lots Amethyst 3.png"
+      },
+Lots_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 1.png"
+      },
+Lots_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 2.png"
+      },
+Lots_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Lots Carnelian 3.png"
+      },
+Lots_Citrine_1: {
+        image: new Image(),
+        src: MP+"Lots Citrine 1.png"
+      },
+Lots_Citrine_2: {
+        image: new Image(),
+        src: MP+"Lots Citrine 2.png"
+      },
+Lots_Citrine_3: {
+        image: new Image(),
+        src: MP+"Lots Citrine 3.png"
+      },
+Lots_Coal_1: {
+        image: new Image(),
+        src: MP+"Lots Coal 1.png"
+      },
+Lots_Coal_2: {
+        image: new Image(),
+        src: MP+"Lots Coal 2.png"
+      },
+Lots_Coal_3: {
+        image: new Image(),
+        src: MP+"Lots Coal 3.png"
+      },
+Lots_Copper_1: {
+        image: new Image(),
+        src: MP+"Lots Copper 1.png"
+      },
+Lots_Copper_2: {
+        image: new Image(),
+        src: MP+"Lots Copper 2.png"
+      },
+Lots_Copper_3: {
+        image: new Image(),
+        src: MP+"Lots Copper 3.png"
+      },
+Lots_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 1.png"
+      },
+Lots_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 2.png"
+      },
+Lots_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Lots Dragon Egg 3.png"
+      },
+Lots_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 1.png"
+      },
+Lots_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 2.png"
+      },
+Lots_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Lots Dragon Tear 3.png"
+      },
+Lots_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 1.png"
+      },
+Lots_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 2.png"
+      },
+Lots_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Lots Eclipseyes 3.png"
+      },
+Lots_Emerald_1: {
+        image: new Image(),
+        src: MP+"Lots Emerald 1.png"
+      },
+Lots_Emerald_2: {
+        image: new Image(),
+        src: MP+"Lots Emerald 2.png"
+      },
+Lots_Emerald_3: {
+        image: new Image(),
+        src: MP+"Lots Emerald 3.png"
+      },
+Lots_Gold_1: {
+        image: new Image(),
+        src: MP+"Lots Gold 1.png"
+      },
+Lots_Gold_2: {
+        image: new Image(),
+        src: MP+"Lots Gold 2.png"
+      },
+Lots_Gold_3: {
+        image: new Image(),
+        src: MP+"Lots Gold 3.png"
+      },
+Lots_Jade_1: {
+        image: new Image(),
+        src: MP+"Lots Jade 1.png"
+      },
+Lots_Jade_2: {
+        image: new Image(),
+        src: MP+"Lots Jade 2.png"
+      },
+Lots_Jade_3: {
+        image: new Image(),
+        src: MP+"Lots Jade 3.png"
+      },
+Lots_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 1.png"
+      },
+Lots_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 2.png"
+      },
+Lots_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Lots Lapis Lazuli 3.png"
+      },
+Lots_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 1.png"
+      },
+Lots_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 2.png"
+      },
+Lots_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Peach Stone 3.png"
+      },
+Lots_Platnium_1: {
+        image: new Image(),
+        src: MP+"Lots Platnium 1.png"
+      },
+Lots_Platnium_2: {
+        image: new Image(),
+        src: MP+"Lots Platnium 2.png"
+      },
+Lots_Platnium_3: {
+        image: new Image(),
+        src: MP+"Lots Platnium 3.png"
+      },
+Lots_Powder_1: {
+        image: new Image(),
+        src: MP+"Lots Powder 1.png"
+      },
+Lots_Powder_2: {
+        image: new Image(),
+        src: MP+"Lots Powder 2.png"
+      },
+Lots_Powder_3: {
+        image: new Image(),
+        src: MP+"Lots Powder 3.png"
+      },
+Lots_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 1.png"
+      },
+Lots_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 2.png"
+      },
+Lots_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Rainbow Stone 3.png"
+      },
+Lots_Ruby_1: {
+        image: new Image(),
+        src: MP+"Lots Ruby 1.png"
+      },
+Lots_Ruby_2: {
+        image: new Image(),
+        src: MP+"Lots Ruby 2.png"
+      },
+Lots_Ruby_3: {
+        image: new Image(),
+        src: MP+"Lots Ruby 3.png"
+      },
+Lots_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 1.png"
+      },
+Lots_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 2.png"
+      },
+Lots_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Lots Sapphire 3.png"
+      },
+Lots_Silver_1: {
+        image: new Image(),
+        src: MP+"Lots Silver 1.png"
+      },
+Lots_Silver_2: {
+        image: new Image(),
+        src: MP+"Lots Silver 2.png"
+      },
+Lots_Silver_3: {
+        image: new Image(),
+        src: MP+"Lots Silver 3.png"
+      },
+Lots_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 1.png"
+      },
+Lots_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 2.png"
+      },
+Lots_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Lots Sunshine Stone 3.png"
+      },
+Lots_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 1.png"
+      },
+Lots_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 2.png"
+      },
+Lots_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Lots Sunstone 3.png"
+      },
+Lots_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 1.png"
+      },
+Lots_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 2.png"
+      },
+Lots_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Lots Tanzanite 3.png"
+      },
+Lots_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 1.png"
+      },
+Lots_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 2.png"
+      },
+Lots_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Lots Unicorn Tear 3.png"
+      },
+Nothing: {
+        image: new Image(),
+        src: MP+"Nothing.png"
+      },
+One_Amethyst_1: {
+        image: new Image(),
+        src: MP+"One Amethyst 1.png"
+      },
+One_Amethyst_2: {
+        image: new Image(),
+        src: MP+"One Amethyst 2.png"
+      },
+One_Amethyst_3: {
+        image: new Image(),
+        src: MP+"One Amethyst 3.png"
+      },
+One_Amethyst_4: {
+        image: new Image(),
+        src: MP+"One Amethyst 4.png"
+      },
+One_Amethyst_5: {
+        image: new Image(),
+        src: MP+"One Amethyst 5.png"
+      },
+One_Amethyst_6: {
+        image: new Image(),
+        src: MP+"One Amethyst 6.png"
+      },
+One_Amethyst_7: {
+        image: new Image(),
+        src: MP+"One Amethyst 7.png"
+      },
+One_Amethyst_8: {
+        image: new Image(),
+        src: MP+"One Amethyst 8.png"
+      },
+One_Amethyst_9: {
+        image: new Image(),
+        src: MP+"One Amethyst 9.png"
+      },
+One_Carnelian_1: {
+        image: new Image(),
+        src: MP+"One Carnelian 1.png"
+      },
+One_Carnelian_2: {
+        image: new Image(),
+        src: MP+"One Carnelian 2.png"
+      },
+One_Carnelian_3: {
+        image: new Image(),
+        src: MP+"One Carnelian 3.png"
+      },
+One_Carnelian_4: {
+        image: new Image(),
+        src: MP+"One Carnelian 4.png"
+      },
+One_Carnelian_5: {
+        image: new Image(),
+        src: MP+"One Carnelian 5.png"
+      },
+One_Carnelian_6: {
+        image: new Image(),
+        src: MP+"One Carnelian 6.png"
+      },
+One_Carnelian_7: {
+        image: new Image(),
+        src: MP+"One Carnelian 7.png"
+      },
+One_Carnelian_8: {
+        image: new Image(),
+        src: MP+"One Carnelian 8.png"
+      },
+One_Carnelian_9: {
+        image: new Image(),
+        src: MP+"One Carnelian 9.png"
+      },
+One_Citrine_1: {
+        image: new Image(),
+        src: MP+"One Citrine 1.png"
+      },
+One_Citrine_2: {
+        image: new Image(),
+        src: MP+"One Citrine 2.png"
+      },
+One_Citrine_3: {
+        image: new Image(),
+        src: MP+"One Citrine 3.png"
+      },
+One_Citrine_4: {
+        image: new Image(),
+        src: MP+"One Citrine 4.png"
+      },
+One_Citrine_5: {
+        image: new Image(),
+        src: MP+"One Citrine 5.png"
+      },
+One_Citrine_6: {
+        image: new Image(),
+        src: MP+"One Citrine 6.png"
+      },
+One_Citrine_7: {
+        image: new Image(),
+        src: MP+"One Citrine 7.png"
+      },
+One_Citrine_8: {
+        image: new Image(),
+        src: MP+"One Citrine 8.png"
+      },
+One_Citrine_9: {
+        image: new Image(),
+        src: MP+"One Citrine 9.png"
+      },
+One_Coal_1: {
+        image: new Image(),
+        src: MP+"One Coal 1.png"
+      },
+One_Coal_2: {
+        image: new Image(),
+        src: MP+"One Coal 2.png"
+      },
+One_Coal_3: {
+        image: new Image(),
+        src: MP+"One Coal 3.png"
+      },
+One_Coal_4: {
+        image: new Image(),
+        src: MP+"One Coal 4.png"
+      },
+One_Coal_5: {
+        image: new Image(),
+        src: MP+"One Coal 5.png"
+      },
+One_Coal_6: {
+        image: new Image(),
+        src: MP+"One Coal 6.png"
+      },
+One_Coal_7: {
+        image: new Image(),
+        src: MP+"One Coal 7.png"
+      },
+One_Coal_8: {
+        image: new Image(),
+        src: MP+"One Coal 8.png"
+      },
+One_Coal_9: {
+        image: new Image(),
+        src: MP+"One Coal 9.png"
+      },
+One_Copper_1: {
+        image: new Image(),
+        src: MP+"One Copper 1.png"
+      },
+One_Copper_2: {
+        image: new Image(),
+        src: MP+"One Copper 2.png"
+      },
+One_Copper_3: {
+        image: new Image(),
+        src: MP+"One Copper 3.png"
+      },
+One_Copper_4: {
+        image: new Image(),
+        src: MP+"One Copper 4.png"
+      },
+One_Copper_5: {
+        image: new Image(),
+        src: MP+"One Copper 5.png"
+      },
+One_Copper_6: {
+        image: new Image(),
+        src: MP+"One Copper 6.png"
+      },
+One_Copper_7: {
+        image: new Image(),
+        src: MP+"One Copper 7.png"
+      },
+One_Copper_8: {
+        image: new Image(),
+        src: MP+"One Copper 8.png"
+      },
+One_Copper_9: {
+        image: new Image(),
+        src: MP+"One Copper 9.png"
+      },
+One_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 1.png"
+      },
+One_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 2.png"
+      },
+One_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 3.png"
+      },
+One_Dragon_Egg_4: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 4.png"
+      },
+One_Dragon_Egg_5: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 5.png"
+      },
+One_Dragon_Egg_6: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 6.png"
+      },
+One_Dragon_Egg_7: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 7.png"
+      },
+One_Dragon_Egg_8: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 8.png"
+      },
+One_Dragon_Egg_9: {
+        image: new Image(),
+        src: MP+"One Dragon Egg 9.png"
+      },
+One_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 1.png"
+      },
+One_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 2.png"
+      },
+One_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 3.png"
+      },
+One_Dragon_Tear_4: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 4.png"
+      },
+One_Dragon_Tear_5: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 5.png"
+      },
+One_Dragon_Tear_6: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 6.png"
+      },
+One_Dragon_Tear_7: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 7.png"
+      },
+One_Dragon_Tear_8: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 8.png"
+      },
+One_Dragon_Tear_9: {
+        image: new Image(),
+        src: MP+"One Dragon Tear 9.png"
+      },
+One_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 1.png"
+      },
+One_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 2.png"
+      },
+One_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 3.png"
+      },
+One_Eclipseyes_4: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 4.png"
+      },
+One_Eclipseyes_5: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 5.png"
+      },
+One_Eclipseyes_6: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 6.png"
+      },
+One_Eclipseyes_7: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 7.png"
+      },
+One_Eclipseyes_8: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 8.png"
+      },
+One_Eclipseyes_9: {
+        image: new Image(),
+        src: MP+"One Eclipseyes 9.png"
+      },
+One_Emerald_1: {
+        image: new Image(),
+        src: MP+"One Emerald 1.png"
+      },
+One_Emerald_2: {
+        image: new Image(),
+        src: MP+"One Emerald 2.png"
+      },
+One_Emerald_3: {
+        image: new Image(),
+        src: MP+"One Emerald 3.png"
+      },
+One_Emerald_4: {
+        image: new Image(),
+        src: MP+"One Emerald 4.png"
+      },
+One_Emerald_5: {
+        image: new Image(),
+        src: MP+"One Emerald 5.png"
+      },
+One_Emerald_6: {
+        image: new Image(),
+        src: MP+"One Emerald 6.png"
+      },
+One_Emerald_7: {
+        image: new Image(),
+        src: MP+"One Emerald 7.png"
+      },
+One_Emerald_8: {
+        image: new Image(),
+        src: MP+"One Emerald 8.png"
+      },
+One_Emerald_9: {
+        image: new Image(),
+        src: MP+"One Emerald 9.png"
+      },
+One_Gold_1: {
+        image: new Image(),
+        src: MP+"One Gold 1.png"
+      },
+One_Gold_2: {
+        image: new Image(),
+        src: MP+"One Gold 2.png"
+      },
+One_Gold_3: {
+        image: new Image(),
+        src: MP+"One Gold 3.png"
+      },
+One_Gold_4: {
+        image: new Image(),
+        src: MP+"One Gold 4.png"
+      },
+One_Gold_5: {
+        image: new Image(),
+        src: MP+"One Gold 5.png"
+      },
+One_Gold_6: {
+        image: new Image(),
+        src: MP+"One Gold 6.png"
+      },
+One_Gold_7: {
+        image: new Image(),
+        src: MP+"One Gold 7.png"
+      },
+One_Gold_8: {
+        image: new Image(),
+        src: MP+"One Gold 8.png"
+      },
+One_Gold_9: {
+        image: new Image(),
+        src: MP+"One Gold 9.png"
+      },
+One_Jade_1: {
+        image: new Image(),
+        src: MP+"One Jade 1.png"
+      },
+One_Jade_2: {
+        image: new Image(),
+        src: MP+"One Jade 2.png"
+      },
+One_Jade_3: {
+        image: new Image(),
+        src: MP+"One Jade 3.png"
+      },
+One_Jade_4: {
+        image: new Image(),
+        src: MP+"One Jade 4.png"
+      },
+One_Jade_5: {
+        image: new Image(),
+        src: MP+"One Jade 5.png"
+      },
+One_Jade_6: {
+        image: new Image(),
+        src: MP+"One Jade 6.png"
+      },
+One_Jade_7: {
+        image: new Image(),
+        src: MP+"One Jade 7.png"
+      },
+One_Jade_8: {
+        image: new Image(),
+        src: MP+"One Jade 8.png"
+      },
+One_Jade_9: {
+        image: new Image(),
+        src: MP+"One Jade 9.png"
+      },
+One_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 1.png"
+      },
+One_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 2.png"
+      },
+One_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 3.png"
+      },
+One_Lapis_Lazuli_4: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 4.png"
+      },
+One_Lapis_Lazuli_5: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 5.png"
+      },
+One_Lapis_Lazuli_6: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 6.png"
+      },
+One_Lapis_Lazuli_7: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 7.png"
+      },
+One_Lapis_Lazuli_8: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 8.png"
+      },
+One_Lapis_Lazuli_9: {
+        image: new Image(),
+        src: MP+"One Lapis Lazuli 9.png"
+      },
+One_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"One Peach Stone 1.png"
+      },
+One_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"One Peach Stone 2.png"
+      },
+One_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"One Peach Stone 3.png"
+      },
+One_Peach_Stone_4: {
+        image: new Image(),
+        src: MP+"One Peach Stone 4.png"
+      },
+One_Peach_Stone_5: {
+        image: new Image(),
+        src: MP+"One Peach Stone 5.png"
+      },
+One_Peach_Stone_6: {
+        image: new Image(),
+        src: MP+"One Peach Stone 6.png"
+      },
+One_Peach_Stone_7: {
+        image: new Image(),
+        src: MP+"One Peach Stone 7.png"
+      },
+One_Peach_Stone_8: {
+        image: new Image(),
+        src: MP+"One Peach Stone 8.png"
+      },
+One_Peach_Stone_9: {
+        image: new Image(),
+        src: MP+"One Peach Stone 9.png"
+      },
+One_Platnium_1: {
+        image: new Image(),
+        src: MP+"One Platnium 1.png"
+      },
+One_Platnium_2: {
+        image: new Image(),
+        src: MP+"One Platnium 2.png"
+      },
+One_Platnium_3: {
+        image: new Image(),
+        src: MP+"One Platnium 3.png"
+      },
+One_Platnium_4: {
+        image: new Image(),
+        src: MP+"One Platnium 4.png"
+      },
+One_Platnium_5: {
+        image: new Image(),
+        src: MP+"One Platnium 5.png"
+      },
+One_Platnium_6: {
+        image: new Image(),
+        src: MP+"One Platnium 6.png"
+      },
+One_Platnium_7: {
+        image: new Image(),
+        src: MP+"One Platnium 7.png"
+      },
+One_Platnium_8: {
+        image: new Image(),
+        src: MP+"One Platnium 8.png"
+      },
+One_Platnium_9: {
+        image: new Image(),
+        src: MP+"One Platnium 9.png"
+      },
+One_Powder_1: {
+        image: new Image(),
+        src: MP+"One Powder 1.png"
+      },
+One_Powder_2: {
+        image: new Image(),
+        src: MP+"One Powder 2.png"
+      },
+One_Powder_3: {
+        image: new Image(),
+        src: MP+"One Powder 3.png"
+      },
+One_Powder_4: {
+        image: new Image(),
+        src: MP+"One Powder 4.png"
+      },
+One_Powder_5: {
+        image: new Image(),
+        src: MP+"One Powder 5.png"
+      },
+One_Powder_6: {
+        image: new Image(),
+        src: MP+"One Powder 6.png"
+      },
+One_Powder_7: {
+        image: new Image(),
+        src: MP+"One Powder 7.png"
+      },
+One_Powder_8: {
+        image: new Image(),
+        src: MP+"One Powder 8.png"
+      },
+One_Powder_9: {
+        image: new Image(),
+        src: MP+"One Powder 9.png"
+      },
+One_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 1.png"
+      },
+One_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 2.png"
+      },
+One_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 3.png"
+      },
+One_Rainbow_Stone_4: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 4.png"
+      },
+One_Rainbow_Stone_5: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 5.png"
+      },
+One_Rainbow_Stone_6: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 6.png"
+      },
+One_Rainbow_Stone_7: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 7.png"
+      },
+One_Rainbow_Stone_8: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 8.png"
+      },
+One_Rainbow_Stone_9: {
+        image: new Image(),
+        src: MP+"One Rainbow Stone 9.png"
+      },
+One_Ruby_1: {
+        image: new Image(),
+        src: MP+"One Ruby 1.png"
+      },
+One_Ruby_2: {
+        image: new Image(),
+        src: MP+"One Ruby 2.png"
+      },
+One_Ruby_3: {
+        image: new Image(),
+        src: MP+"One Ruby 3.png"
+      },
+One_Ruby_4: {
+        image: new Image(),
+        src: MP+"One Ruby 4.png"
+      },
+One_Ruby_5: {
+        image: new Image(),
+        src: MP+"One Ruby 5.png"
+      },
+One_Ruby_6: {
+        image: new Image(),
+        src: MP+"One Ruby 6.png"
+      },
+One_Ruby_7: {
+        image: new Image(),
+        src: MP+"One Ruby 7.png"
+      },
+One_Ruby_8: {
+        image: new Image(),
+        src: MP+"One Ruby 8.png"
+      },
+One_Ruby_9: {
+        image: new Image(),
+        src: MP+"One Ruby 9.png"
+      },
+One_Sapphire_1: {
+        image: new Image(),
+        src: MP+"One Sapphire 1.png"
+      },
+One_Sapphire_2: {
+        image: new Image(),
+        src: MP+"One Sapphire 2.png"
+      },
+One_Sapphire_3: {
+        image: new Image(),
+        src: MP+"One Sapphire 3.png"
+      },
+One_Sapphire_4: {
+        image: new Image(),
+        src: MP+"One Sapphire 4.png"
+      },
+One_Sapphire_5: {
+        image: new Image(),
+        src: MP+"One Sapphire 5.png"
+      },
+One_Sapphire_6: {
+        image: new Image(),
+        src: MP+"One Sapphire 6.png"
+      },
+One_Sapphire_7: {
+        image: new Image(),
+        src: MP+"One Sapphire 7.png"
+      },
+One_Sapphire_8: {
+        image: new Image(),
+        src: MP+"One Sapphire 8.png"
+      },
+One_Sapphire_9: {
+        image: new Image(),
+        src: MP+"One Sapphire 9.png"
+      },
+One_Silver_1: {
+        image: new Image(),
+        src: MP+"One Silver 1.png"
+      },
+One_Silver_2: {
+        image: new Image(),
+        src: MP+"One Silver 2.png"
+      },
+One_Silver_3: {
+        image: new Image(),
+        src: MP+"One Silver 3.png"
+      },
+One_Silver_4: {
+        image: new Image(),
+        src: MP+"One Silver 4.png"
+      },
+One_Silver_5: {
+        image: new Image(),
+        src: MP+"One Silver 5.png"
+      },
+One_Silver_6: {
+        image: new Image(),
+        src: MP+"One Silver 6.png"
+      },
+One_Silver_7: {
+        image: new Image(),
+        src: MP+"One Silver 7.png"
+      },
+One_Silver_8: {
+        image: new Image(),
+        src: MP+"One Silver 8.png"
+      },
+One_Silver_9: {
+        image: new Image(),
+        src: MP+"One Silver 9.png"
+      },
+One_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 1.png"
+      },
+One_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 2.png"
+      },
+One_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 3.png"
+      },
+One_Sunshine_Stone_4: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 4.png"
+      },
+One_Sunshine_Stone_5: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 5.png"
+      },
+One_Sunshine_Stone_6: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 6.png"
+      },
+One_Sunshine_Stone_7: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 7.png"
+      },
+One_Sunshine_Stone_8: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 8.png"
+      },
+One_Sunshine_Stone_9: {
+        image: new Image(),
+        src: MP+"One Sunshine Stone 9.png"
+      },
+One_Sunstone_1: {
+        image: new Image(),
+        src: MP+"One Sunstone 1.png"
+      },
+One_Sunstone_2: {
+        image: new Image(),
+        src: MP+"One Sunstone 2.png"
+      },
+One_Sunstone_3: {
+        image: new Image(),
+        src: MP+"One Sunstone 3.png"
+      },
+One_Sunstone_4: {
+        image: new Image(),
+        src: MP+"One Sunstone 4.png"
+      },
+One_Sunstone_5: {
+        image: new Image(),
+        src: MP+"One Sunstone 5.png"
+      },
+One_Sunstone_6: {
+        image: new Image(),
+        src: MP+"One Sunstone 6.png"
+      },
+One_Sunstone_7: {
+        image: new Image(),
+        src: MP+"One Sunstone 7.png"
+      },
+One_Sunstone_8: {
+        image: new Image(),
+        src: MP+"One Sunstone 8.png"
+      },
+One_Sunstone_9: {
+        image: new Image(),
+        src: MP+"One Sunstone 9.png"
+      },
+One_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"One Tanzanite 1.png"
+      },
+One_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"One Tanzanite 2.png"
+      },
+One_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"One Tanzanite 3.png"
+      },
+One_Tanzanite_4: {
+        image: new Image(),
+        src: MP+"One Tanzanite 4.png"
+      },
+One_Tanzanite_5: {
+        image: new Image(),
+        src: MP+"One Tanzanite 5.png"
+      },
+One_Tanzanite_6: {
+        image: new Image(),
+        src: MP+"One Tanzanite 6.png"
+      },
+One_Tanzanite_7: {
+        image: new Image(),
+        src: MP+"One Tanzanite 7.png"
+      },
+One_Tanzanite_8: {
+        image: new Image(),
+        src: MP+"One Tanzanite 8.png"
+      },
+One_Tanzanite_9: {
+        image: new Image(),
+        src: MP+"One Tanzanite 9.png"
+      },
+One_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 1.png"
+      },
+One_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 2.png"
+      },
+One_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 3.png"
+      },
+One_Unicorn_Tear_4: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 4.png"
+      },
+One_Unicorn_Tear_5: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 5.png"
+      },
+One_Unicorn_Tear_6: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 6.png"
+      },
+One_Unicorn_Tear_7: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 7.png"
+      },
+One_Unicorn_Tear_8: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 8.png"
+      },
+One_Unicorn_Tear_9: {
+        image: new Image(),
+        src: MP+"One Unicorn Tear 9.png"
+      },
+Some_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Some Amethyst 1.png"
+      },
+Some_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Some Amethyst 2.png"
+      },
+Some_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Some Amethyst 3.png"
+      },
+Some_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Some Carnelian 1.png"
+      },
+Some_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Some Carnelian 2.png"
+      },
+Some_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Some Carnelian 3.png"
+      },
+Some_Citrine_1: {
+        image: new Image(),
+        src: MP+"Some Citrine 1.png"
+      },
+Some_Citrine_2: {
+        image: new Image(),
+        src: MP+"Some Citrine 2.png"
+      },
+Some_Citrine_3: {
+        image: new Image(),
+        src: MP+"Some Citrine 3.png"
+      },
+Some_Coal_1: {
+        image: new Image(),
+        src: MP+"Some Coal 1.png"
+      },
+Some_Coal_2: {
+        image: new Image(),
+        src: MP+"Some Coal 2.png"
+      },
+Some_Coal_3: {
+        image: new Image(),
+        src: MP+"Some Coal 3.png"
+      },
+Some_Copper_1: {
+        image: new Image(),
+        src: MP+"Some Copper 1.png"
+      },
+Some_Copper_2: {
+        image: new Image(),
+        src: MP+"Some Copper 2.png"
+      },
+Some_Copper_3: {
+        image: new Image(),
+        src: MP+"Some Copper 3.png"
+      },
+Some_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 1.png"
+      },
+Some_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 2.png"
+      },
+Some_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Some Dragon Egg 3.png"
+      },
+Some_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 1.png"
+      },
+Some_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 2.png"
+      },
+Some_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Some Dragon Tear 3.png"
+      },
+Some_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 1.png"
+      },
+Some_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 2.png"
+      },
+Some_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Some Eclipseyes 3.png"
+      },
+Some_Emerald_1: {
+        image: new Image(),
+        src: MP+"Some Emerald 1.png"
+      },
+Some_Emerald_2: {
+        image: new Image(),
+        src: MP+"Some Emerald 2.png"
+      },
+Some_Emerald_3: {
+        image: new Image(),
+        src: MP+"Some Emerald 3.png"
+      },
+Some_Gold_1: {
+        image: new Image(),
+        src: MP+"Some Gold 1.png"
+      },
+Some_Gold_2: {
+        image: new Image(),
+        src: MP+"Some Gold 2.png"
+      },
+Some_Gold_3: {
+        image: new Image(),
+        src: MP+"Some Gold 3.png"
+      },
+Some_Jade_1: {
+        image: new Image(),
+        src: MP+"Some Jade 1.png"
+      },
+Some_Jade_2: {
+        image: new Image(),
+        src: MP+"Some Jade 2.png"
+      },
+Some_Jade_3: {
+        image: new Image(),
+        src: MP+"Some Jade 3.png"
+      },
+Some_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 1.png"
+      },
+Some_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 2.png"
+      },
+Some_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Some Lapis Lazuli 3.png"
+      },
+Some_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 1.png"
+      },
+Some_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 2.png"
+      },
+Some_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Peach Stone 3.png"
+      },
+Some_Platnium_1: {
+        image: new Image(),
+        src: MP+"Some Platnium 1.png"
+      },
+Some_Platnium_2: {
+        image: new Image(),
+        src: MP+"Some Platnium 2.png"
+      },
+Some_Platnium_3: {
+        image: new Image(),
+        src: MP+"Some Platnium 3.png"
+      },
+Some_Powder_1: {
+        image: new Image(),
+        src: MP+"Some Powder 1.png"
+      },
+Some_Powder_2: {
+        image: new Image(),
+        src: MP+"Some Powder 2.png"
+      },
+Some_Powder_3: {
+        image: new Image(),
+        src: MP+"Some Powder 3.png"
+      },
+Some_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 1.png"
+      },
+Some_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 2.png"
+      },
+Some_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Rainbow Stone 3.png"
+      },
+Some_Ruby_1: {
+        image: new Image(),
+        src: MP+"Some Ruby 1.png"
+      },
+Some_Ruby_2: {
+        image: new Image(),
+        src: MP+"Some Ruby 2.png"
+      },
+Some_Ruby_3: {
+        image: new Image(),
+        src: MP+"Some Ruby 3.png"
+      },
+Some_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Some Sapphire 1.png"
+      },
+Some_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Some Sapphire 2.png"
+      },
+Some_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Some Sapphire 3.png"
+      },
+Some_Silver_1: {
+        image: new Image(),
+        src: MP+"Some Silver 1.png"
+      },
+Some_Silver_2: {
+        image: new Image(),
+        src: MP+"Some Silver 2.png"
+      },
+Some_Silver_3: {
+        image: new Image(),
+        src: MP+"Some Silver 3.png"
+      },
+Some_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 1.png"
+      },
+Some_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 2.png"
+      },
+Some_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Some Sunshine Stone 3.png"
+      },
+Some_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Some Sunstone 1.png"
+      },
+Some_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Some Sunstone 2.png"
+      },
+Some_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Some Sunstone 3.png"
+      },
+Some_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 1.png"
+      },
+Some_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 2.png"
+      },
+Some_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Some Tanzanite 3.png"
+      },
+Some_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 1.png"
+      },
+Some_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 2.png"
+      },
+Some_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Some Unicorn Tear 3.png"
+      },
+Tons_Amethyst_1: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 1.png"
+      },
+Tons_Amethyst_2: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 2.png"
+      },
+Tons_Amethyst_3: {
+        image: new Image(),
+        src: MP+"Tons Amethyst 3.png"
+      },
+Tons_Carnelian_1: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 1.png"
+      },
+Tons_Carnelian_2: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 2.png"
+      },
+Tons_Carnelian_3: {
+        image: new Image(),
+        src: MP+"Tons Carnelian 3.png"
+      },
+Tons_Citrine_1: {
+        image: new Image(),
+        src: MP+"Tons Citrine 1.png"
+      },
+Tons_Citrine_2: {
+        image: new Image(),
+        src: MP+"Tons Citrine 2.png"
+      },
+Tons_Citrine_3: {
+        image: new Image(),
+        src: MP+"Tons Citrine 3.png"
+      },
+Tons_Coal_1: {
+        image: new Image(),
+        src: MP+"Tons Coal 1.png"
+      },
+Tons_Coal_2: {
+        image: new Image(),
+        src: MP+"Tons Coal 2.png"
+      },
+Tons_Coal_3: {
+        image: new Image(),
+        src: MP+"Tons Coal 3.png"
+      },
+Tons_Copper_1: {
+        image: new Image(),
+        src: MP+"Tons Copper 1.png"
+      },
+Tons_Copper_2: {
+        image: new Image(),
+        src: MP+"Tons Copper 2.png"
+      },
+Tons_Copper_3: {
+        image: new Image(),
+        src: MP+"Tons Copper 3.png"
+      },
+Tons_Dragon_Egg_1: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 1.png"
+      },
+Tons_Dragon_Egg_2: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 2.png"
+      },
+Tons_Dragon_Egg_3: {
+        image: new Image(),
+        src: MP+"Tons Dragon Egg 3.png"
+      },
+Tons_Dragon_Tear_1: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 1.png"
+      },
+Tons_Dragon_Tear_2: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 2.png"
+      },
+Tons_Dragon_Tear_3: {
+        image: new Image(),
+        src: MP+"Tons Dragon Tear 3.png"
+      },
+Tons_Eclipseyes_1: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 1.png"
+      },
+Tons_Eclipseyes_2: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 2.png"
+      },
+Tons_Eclipseyes_3: {
+        image: new Image(),
+        src: MP+"Tons Eclipseyes 3.png"
+      },
+Tons_Emerald_1: {
+        image: new Image(),
+        src: MP+"Tons Emerald 1.png"
+      },
+Tons_Emerald_2: {
+        image: new Image(),
+        src: MP+"Tons Emerald 2.png"
+      },
+Tons_Emerald_3: {
+        image: new Image(),
+        src: MP+"Tons Emerald 3.png"
+      },
+Tons_Gold_1: {
+        image: new Image(),
+        src: MP+"Tons Gold 1.png"
+      },
+Tons_Gold_2: {
+        image: new Image(),
+        src: MP+"Tons Gold 2.png"
+      },
+Tons_Gold_3: {
+        image: new Image(),
+        src: MP+"Tons Gold 3.png"
+      },
+Tons_Jade_1: {
+        image: new Image(),
+        src: MP+"Tons Jade 1.png"
+      },
+Tons_Jade_2: {
+        image: new Image(),
+        src: MP+"Tons Jade 2.png"
+      },
+Tons_Jade_3: {
+        image: new Image(),
+        src: MP+"Tons Jade 3.png"
+      },
+Tons_Lapis_Lazuli_1: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 1.png"
+      },
+Tons_Lapis_Lazuli_2: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 2.png"
+      },
+Tons_Lapis_Lazuli_3: {
+        image: new Image(),
+        src: MP+"Tons Lapis Lazuli 3.png"
+      },
+Tons_Peach_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 1.png"
+      },
+Tons_Peach_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 2.png"
+      },
+Tons_Peach_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Peach Stone 3.png"
+      },
+Tons_Platnium_1: {
+        image: new Image(),
+        src: MP+"Tons Platnium 1.png"
+      },
+Tons_Platnium_2: {
+        image: new Image(),
+        src: MP+"Tons Platnium 2.png"
+      },
+Tons_Platnium_3: {
+        image: new Image(),
+        src: MP+"Tons Platnium 3.png"
+      },
+Tons_Powder_1: {
+        image: new Image(),
+        src: MP+"Tons Powder 1.png"
+      },
+Tons_Powder_2: {
+        image: new Image(),
+        src: MP+"Tons Powder 2.png"
+      },
+Tons_Powder_3: {
+        image: new Image(),
+        src: MP+"Tons Powder 3.png"
+      },
+Tons_Rainbow_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 1.png"
+      },
+Tons_Rainbow_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 2.png"
+      },
+Tons_Rainbow_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Rainbow Stone 3.png"
+      },
+Tons_Ruby_1: {
+        image: new Image(),
+        src: MP+"Tons Ruby 1.png"
+      },
+Tons_Ruby_2: {
+        image: new Image(),
+        src: MP+"Tons Ruby 2.png"
+      },
+Tons_Ruby_3: {
+        image: new Image(),
+        src: MP+"Tons Ruby 3.png"
+      },
+Tons_Sapphire_1: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 1.png"
+      },
+Tons_Sapphire_2: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 2.png"
+      },
+Tons_Sapphire_3: {
+        image: new Image(),
+        src: MP+"Tons Sapphire 3.png"
+      },
+Tons_Silver_1: {
+        image: new Image(),
+        src: MP+"Tons Silver 1.png"
+      },
+Tons_Silver_2: {
+        image: new Image(),
+        src: MP+"Tons Silver 2.png"
+      },
+Tons_Silver_3: {
+        image: new Image(),
+        src: MP+"Tons Silver 3.png"
+      },
+Tons_Sunshine_Stone_1: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 1.png"
+      },
+Tons_Sunshine_Stone_2: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 2.png"
+      },
+Tons_Sunshine_Stone_3: {
+        image: new Image(),
+        src: MP+"Tons Sunshine Stone 3.png"
+      },
+Tons_Sunstone_1: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 1.png"
+      },
+Tons_Sunstone_2: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 2.png"
+      },
+Tons_Sunstone_3: {
+        image: new Image(),
+        src: MP+"Tons Sunstone 3.png"
+      },
+Tons_Tanzanite_1: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 1.png"
+      },
+Tons_Tanzanite_2: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 2.png"
+      },
+Tons_Tanzanite_3: {
+        image: new Image(),
+        src: MP+"Tons Tanzanite 3.png"
+      },
+Tons_Unicorn_Tear_1: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 1.png"
+      },
+Tons_Unicorn_Tear_2: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 2.png"
+      },
+Tons_Unicorn_Tear_3: {
+        image: new Image(),
+        src: MP+"Tons Unicorn Tear 3.png"
+      },
+
+      // If you add more mineral types, do so here
+    };
+
+const DirtPatch = {
+    "none": 0.85,
+    "Coal": 0.1,
+    "Copper": 0.05
+};
+
+const RockyDirt = {
+    "none": 0.8,
+    "Coal": 0.1,
+    "Copper": 0.05,
+    "Citrine": 0.05
+};
+
+const FrozenSoil = {
+    "none": 0.75,
+    "Coal": 0.1,
+    "Copper": 0.05,
+    "Citrine": 0.05,
+    "Amethyst": 0.05
+};
+
+const MagmaVein = {
+    "none": 0.7,
+    "Coal": 0.1,
+    "Copper": 0.05,
+    "Amethyst": 0.1,
+    "Carnelian": 0.05
+};
+
+const MetalOreField = {
+    "none": 0.65,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.05,
+    "Gold": 0.05
+};
+
+const SnowyOutcrop = {
+    "none": 0.6,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Amethyst": 0.05,
+    "Carnelian": 0.05
+};
+
+const RockyPlateau = {
+    "none": 0.6,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Carnelian": 0.05,
+    "Emerald": 0.05
+};
+
+const StonyField = {
+    "none": 0.55,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.05,
+    "Emerald": 0.1
+};
+
+const WaterloggedCavern = {
+    "none": 0.5,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.1
+};
+
+const ForestMine = {
+    "none": 0.5,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.1,
+    "Ruby": 0.1
+};
+
+const FrozenDirt = {
+    "none": 0.85,
+    "Coal": 0.1,
+    "Copper": 0.05
+};
+
+const CrackedIce = {
+    "none": 0.8,
+    "Coal": 0.1,
+    "Copper": 0.05,
+    "Citrine": 0.05
+};
+
+const MagmaChamber = {
+    "none": 0.75,
+    "Coal": 0.1,
+    "Copper": 0.05,
+    "Citrine": 0.05,
+    "Amethyst": 0.05
+};
+
+const MetalSeam = {
+    "none": 0.7,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.05
+};
+
+const SnowfieldRidge = {
+    "none": 0.65,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Carnelian": 0.1
+};
+
+const JaggedRock = {
+    "none": 0.6,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Amethyst": 0.05,
+    "Carnelian": 0.05
+};
+
+const StonyPath = {
+    "none": 0.6,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Emerald": 0.05,
+    "Carnelian": 0.05
+};
+
+const GlacialOutcrop = {
+    "none": 0.55,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Emerald": 0.1,
+    "Carnelian": 0.05
+};
+
+const CrystalPool = {
+    "none": 0.5,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Citrine": 0.1,
+    "Amethyst": 0.1,
+    "Emerald": 0.1
+};
+
+const MineralSprings = {
+    "none": 0.45,
+    "Coal": 0.1,
+    "Copper": 0.1,
+    "Amethyst": 0.1,
+    "Emerald": 0.1,
+    "Ruby": 0.05
+};
+
+const LavaField = {
+    "none": 0.4,
+    "Coal": 0.05,
+    "Copper": 0.1,
+    "Citrine": 0.15,
+    "Amethyst": 0.15,
+    "Carnelian": 0.15
+};
+
+const MoltenCanyon = {
+    "none": 0.35,
+    "Coal": 0.05,
+    "Copper": 0.05,
+    "Citrine": 0.2,
+    "Amethyst": 0.2,
+    "Ruby": 0.15
+};
+
+const SunlitCavern = {
+    "none": 0.3,
+    "Coal": 0.05,
+    "Copper": 0.05,
+    "Amethyst": 0.25,
+    "Ruby": 0.2,
+    "Emerald": 0.15
+};
+
+const EmeraldGorge = {
+    "none": 0.25,
+    "Coal": 0.05,
+    "Copper": 0.05,
+    "Amethyst": 0.25,
+    "Emerald": 0.25,
+    "Ruby": 0.15
+};
+
+const RubyFissure = {
+    "none": 0.2,
+    "Coal": 0.05,
+    "Copper": 0.05,
+    "Amethyst": 0.2,
+    "Ruby": 0.25,
+    "Emerald": 0.25
+};
+
+const SapphireCrevice = {
+    "none": 0.15,
+    "Coal": 0.05,
+    "Copper": 0.05,
+    "Amethyst": 0.15,
+    "Sapphire": 0.3,
+    "Ruby": 0.3
+};
+
+const GlimmeringCrater = {
+    "none": 0.1,
+    "Copper": 0.05,
+    "Amethyst": 0.1,
+    "Sapphire": 0.35,
+    "Ruby": 0.25,
+    "Emerald": 0.15
+};
+
+const RadiantCave = {
+    "none": 0.1,
+    "Copper": 0.05,
+    "Amethyst": 0.05,
+    "Sapphire": 0.4,
+    "Ruby": 0.3,
+    "Emerald": 0.1
+};
+
+const ShimmeringAbyss = {
+    "none": 0.05,
+    "Copper": 0.05,
+    "Amethyst": 0.05,
+    "Sapphire": 0.4,
+    "Ruby": 0.3,
+    "Emerald": 0.2
+};
+
+const LuminousDepths = {
+    "none": 0.05,
+    "Amethyst": 0.05,
+    "Sapphire": 0.4,
+    "Ruby": 0.4,
+    "Emerald": 0.1
+};
+const DirtPatchTile = {
+    "Dirt 1": 0.7,
+    "Dirt 2": 0.3
+};
+
+const RockyDirtTile = {
+    "Dirt 3": 0.6,
+    "Rock": 0.4
+};
+
+const FrozenSoilTile = {
+    "Dirt 4": 0.5,
+    "Snow": 0.3,
+    "Ice": 0.2
+};
+
+const MagmaVeinTile = {
+    "Dirt 5": 0.4,
+    "Magma": 0.4,
+    "Rock": 0.2
+};
+
+const MetalOreFieldTile = {
+    "Metal": 0.6,
+    "Rock": 0.3,
+    "Stone 1": 0.1
+};
+
+const SnowyOutcropTile = {
+    "Snow": 0.5,
+    "Ice": 0.4,
+    "Rock": 0.1
+};
+
+const RockyPlateauTile = {
+    "Rock": 0.5,
+    "Stone 1": 0.4,
+    "Dirt 4": 0.1
+};
+
+const StonyFieldTile = {
+    "Stone 1": 0.6,
+    "Rock": 0.3,
+    "Dirt 3": 0.1
+};
+
+const WaterloggedCavernTile = {
+    "Water": 0.5,
+    "Rock": 0.3,
+    "Stone 1": 0.2
+};
+
+const ForestMineTile = {
+    "Wood": 0.5,
+    "Dirt 2": 0.3,
+    "Rock": 0.2
+};
+
+const FrozenDirtTile = {
+    "Dirt 1": 0.7,
+    "Ice": 0.3
+};
+
+const CrackedIceTile = {
+    "Snow": 0.6,
+    "Ice": 0.4
+};
+
+const MagmaChamberTile = {
+    "Magma": 0.6,
+    "Rock": 0.4
+};
+
+const MetalSeamTile = {
+    "Metal": 0.6,
+    "Stone 1": 0.3,
+    "Rock": 0.1
+};
+
+const SnowfieldRidgeTile = {
+    "Snow": 0.5,
+    "Ice": 0.3,
+    "Rock": 0.2
+};
+
+const JaggedRockTile = {
+    "Rock": 0.6,
+    "Stone 1": 0.3,
+    "Dirt 2": 0.1
+};
+
+const StonyPathTile = {
+    "Stone 1": 0.6,
+    "Rock": 0.3,
+    "Dirt 3": 0.1
+};
+
+const GlacialOutcropTile = {
+    "Snow": 0.5,
+    "Ice": 0.3,
+    "Rock": 0.2
+};
+
+const CrystalPoolTile = {
+    "Water": 0.5,
+    "Ice": 0.3,
+    "Rock": 0.2
+};
+
+const MineralSpringsTile = {
+    "Water": 0.5,
+    "Rock": 0.3,
+    "Stone 1": 0.2
+};
+
+const LavaFieldTile = {
+    "Magma": 0.6,
+    "Rock": 0.3,
+    "Dirt 4": 0.1
+};
+
+const MoltenCanyonTile = {
+    "Magma": 0.5,
+    "Rock": 0.4,
+    "Stone 1": 0.1
+};
+
+const SunlitCavernTile = {
+    "Rock": 0.5,
+    "Stone 1": 0.3,
+    "Water": 0.2
+};
+
+const EmeraldGorgeTile = {
+    "Rock": 0.4,
+    "Stone 1": 0.3,
+    "Water": 0.3
+};
+
+const RubyFissureTile = {
+    "Rock": 0.4,
+    "Stone 1": 0.3,
+    "Magma": 0.3
+};
+
+const SapphireCreviceTile = {
+    "Rock": 0.5,
+    "Stone 1": 0.3,
+    "Water": 0.2
+};
+
+const GlimmeringCraterTile = {
+    "Magma": 0.5,
+    "Rock": 0.3,
+    "Stone 1": 0.2
+};
+
+const RadiantCaveTile = {
+    "Stone 1": 0.5,
+    "Rock": 0.3,
+    "Magma": 0.2
+};
+
+const ShimmeringAbyssTile = {
+    "Water": 0.5,
+    "Rock": 0.3,
+    "Ice": 0.2
+};
+
+const LuminousDepthsTile = {
+    "Water": 0.6,
+    "Ice": 0.3,
+    "Rock": 0.1
+};
+function processStage(stageName) {
+    stageNameWithSpace = stageName;
+    stageName = stageName.replace(/ /g, '');
+
+    // Validate stage data
+    const stage = stageData[stageName];
+    if (!stage) {
+        console.error(`Stage data not found for: ${stageName}`);
+        return;
+    }
+ // Process minerals
+    const minerals = stage.minerals;
+    if (minerals) {
+        for (const [mineralName, percentage] of Object.entries(minerals)) {
+          if(mineralName == "none") continue
+            injectMineralToStage(
+                menuData,
+                stageNameWithSpace,
+                `${mineralName} ${(percentage * 100).toFixed(0)}%`,
+                MPBG + `Lots ${mineralName} 3.png`
+            );
+        }
+    } else {
+        console.error(`No mineral data found for stage: ${stageName}`);
+    }
+    // Process tiles
+    const tiles = stage.tiles;
+    if (tiles) {
+        for (const [tileName, percentage] of Object.entries(tiles)) {
+            injectMineralToStage(
+                menuData,
+                stageNameWithSpace,
+                `${tileName} ${(percentage * 100).toFixed(0)}%`,
+                TP + `${tileName} 512.png`
+            );
+        }
+    } else {
+        console.error(`No tile data found for stage: ${stageName}`);
+    }
+
+   
 }
-resizeCanvas();
 
-// 3. Load your tile & mineral images
-const tileImage = new Image();
-tileImage.src = "https://github.com/MaxMeents/Limitless-Idle-Web/blob/main/img/High Qualikty Tiles/Dirt 1 512.png?raw=true";
 
-const mineralImage = new Image();
-mineralImage.src = "https://github.com/MaxMeents/Limitless-Idle-Web/blob/main/img/Minerals/Tons Tanzanite 3.png?raw=true";
 
-// 4. Function to draw a single tile (dirt + mineral)
-function drawTile(x, y, size) {
-  ctx.drawImage(tileImage, x, y, size, size); // Draw the base tile
-  ctx.drawImage(mineralImage, x, y, size, size); // Overlay the mineral
+    // Load all tile images
+    let imagesToLoad = 0;
+    function loadImages(callback) {
+      for (let type in tileTypes) {
+        imagesToLoad++;
+        tileTypes[type].image.src = tileTypes[type].src;
+        tileTypes[type].image.onload = () => {
+          imagesToLoad--;
+          if (imagesToLoad === 0) callback();
+        };
+        tileTypes[type].image.onerror = () => {
+          console.error(`Failed to load tile image: ${tileTypes[type].src}`);
+          document.getElementById('loading').innerText = `Failed to load tile image: ${tileTypes[type].src}`;
+        };
+      }
+
+      for (let type in mineralTypes) {
+        imagesToLoad++;
+        mineralTypes[type].image.src = mineralTypes[type].src;
+        mineralTypes[type].image.onload = () => {
+          imagesToLoad--;
+          if (imagesToLoad === 0) callback();
+        };
+        mineralTypes[type].image.onerror = () => {
+          console.error(`Failed to load mineral image: ${mineralTypes[type].src}`);
+          document.getElementById('loading').innerText = `Failed to load mineral image: ${mineralTypes[type].src}`;
+        };
+      }
+    }
+
+    // Adjusted values
+    window.WaitTimeForMoveChunksUp = 200;
+    window.ContinueDestroying = true
+    window.allChunks = [];
+    window.size = 80;                  // The size of each tile in pixels
+    window.SizeOfDiamond = 256
+    window.currentTileToDestroy = SizeOfDiamond - 1; // Because each chunk has 256 tiles
+    window.shouldMove = false;
+    window.removeTimer = 0;
+    window.LayersRemoved = 0
+    window.NumOfLayers = $('.TileContainer').height()/size * 2 
+    window.TilesDestroyed = 0
+    window.layerCount = 0
+    window.Damage = 5
+    window.life = 100
+    window.DestroyAtOnce = 1
+    window.stagesInSequence = true
+    
+    AssignJsonForTileAndMineral()
+    function generateRandomItem(probabilities) {
+    const items = Object.keys(probabilities);
+    const weights = Object.values(probabilities);
+
+    // Calculate the total weight
+    const totalWeight = weights.reduce((acc, weight) => acc + weight, 0);
+
+    // Adjust weights proportionally to make the sum equal to 1
+    if (Math.abs(totalWeight - 1) > 0.0001) {
+        const adjustmentFactor = 1 / totalWeight;
+        for (let i = 0; i < weights.length; i++) {
+            weights[i] *= adjustmentFactor;
+        }
+    }
+
+    // Calculate the cumulative distribution
+    const cumulativeWeights = [];
+    weights.reduce((acc, weight, index) => {
+        cumulativeWeights[index] = acc + weight;
+        return cumulativeWeights[index];
+    }, 0);
+
+    // Generate a random number between 0 and 1
+    const random = Math.random();
+
+    // Find the corresponding item based on the random value
+    for (let i = 0; i < cumulativeWeights.length; i++) {
+        if (random < cumulativeWeights[i]) {
+            return items[i];
+        }
+    }
+
+    return null; // Fallback (shouldn't reach here)
+}
+const stageData = {
+  DirtPatch: { minerals: DirtPatch, tiles: DirtPatchTile },
+  RockyDirt: { minerals: RockyDirt, tiles: RockyDirtTile },
+  FrozenSoil: { minerals: FrozenSoil, tiles: FrozenSoilTile },
+  MagmaVein: { minerals: MagmaVein, tiles: MagmaVeinTile },
+  MetalOreField: { minerals: MetalOreField, tiles: MetalOreFieldTile },
+  SnowyOutcrop: { minerals: SnowyOutcrop, tiles: SnowyOutcropTile },
+  RockyPlateau: { minerals: RockyPlateau, tiles: RockyPlateauTile },
+  StonyField: { minerals: StonyField, tiles: StonyFieldTile },
+  WaterloggedCavern: { minerals: WaterloggedCavern, tiles: WaterloggedCavernTile },
+  ForestMine: { minerals: ForestMine, tiles: ForestMineTile },
+  FrozenDirt: { minerals: FrozenDirt, tiles: FrozenDirtTile },
+  CrackedIce: { minerals: CrackedIce, tiles: CrackedIceTile },
+  MagmaChamber: { minerals: MagmaChamber, tiles: MagmaChamberTile },
+  MetalSeam: { minerals: MetalSeam, tiles: MetalSeamTile },
+  SnowfieldRidge: { minerals: SnowfieldRidge, tiles: SnowfieldRidgeTile },
+  JaggedRock: { minerals: JaggedRock, tiles: JaggedRockTile },
+  StonyPath: { minerals: StonyPath, tiles: StonyPathTile },
+  GlacialOutcrop: { minerals: GlacialOutcrop, tiles: GlacialOutcropTile },
+  CrystalPool: { minerals: CrystalPool, tiles: CrystalPoolTile },
+  MineralSprings: { minerals: MineralSprings, tiles: MineralSpringsTile },
+  LavaField: { minerals: LavaField, tiles: LavaFieldTile },
+  MoltenCanyon: { minerals: MoltenCanyon, tiles: MoltenCanyonTile },
+  SunlitCavern: { minerals: SunlitCavern, tiles: SunlitCavernTile },
+  EmeraldGorge: { minerals: EmeraldGorge, tiles: EmeraldGorgeTile },
+  RubyFissure: { minerals: RubyFissure, tiles: RubyFissureTile },
+  SapphireCrevice: { minerals: SapphireCrevice, tiles: SapphireCreviceTile },
+  GlimmeringCrater: { minerals: GlimmeringCrater, tiles: GlimmeringCraterTile },
+  RadiantCave: { minerals: RadiantCave, tiles: RadiantCaveTile },
+  ShimmeringAbyss: { minerals: ShimmeringAbyss, tiles: ShimmeringAbyssTile },
+  LuminousDepths: { minerals: LuminousDepths, tiles: LuminousDepthsTile },
+};
+const validOptions = {
+    "Dirt Patch": "DirtPatch",
+    "Rocky Dirt": "RockyDirt",
+    "Frozen Soil": "FrozenSoil",
+    "Magma Vein": "MagmaVein",
+    "Metal Ore Field": "MetalOreField",
+    "Snowy Outcrop": "SnowyOutcrop",
+    "Rocky Plateau": "RockyPlateau",
+    "Stony Field": "StonyField",
+    "Waterlogged Cavern": "WaterloggedCavern",
+    "Forest Mine": "ForestMine",
+    "Frozen Dirt": "FrozenDirt",
+    "Cracked Ice": "CrackedIce",
+    "Magma Chamber": "MagmaChamber",
+    "Metal Seam": "MetalSeam",
+    "Snowfield Ridge": "SnowfieldRidge",
+    "Jagged Rock": "JaggedRock",
+    "Stony Path": "StonyPath",
+    "Glacial Outcrop": "GlacialOutcrop",
+    "Crystal Pool": "CrystalPool",
+    "Mineral Springs": "MineralSprings",
+    "Lava Field": "LavaField",
+    "Molten Canyon": "MoltenCanyon",
+    "Sunlit Cavern": "SunlitCavern",
+    "Emerald Gorge": "EmeraldGorge",
+    "Ruby Fissure": "RubyFissure",
+    "Sapphire Crevice": "SapphireCrevice",
+    "Glimmering Crater": "GlimmeringCrater",
+    "Radiant Cave": "RadiantCave",
+    "Shimmering Abyss": "ShimmeringAbyss",
+    "Luminous Depths": "LuminousDepths"
+};
+
+processStage("Dirt Patch")
+processStage("Rocky Dirt")
+processStage("Frozen Soil")
+processStage("Magma Vein")
+processStage("Metal Ore Field")
+processStage("Snowy Outcrop")
+processStage("Rocky Plateau")
+processStage("Stony Field")
+processStage("Waterlogged Cavern")
+processStage("Forest Mine")
+processStage("Frozen Dirt")
+processStage("Cracked Ice")
+processStage("Magma Chamber")
+processStage("Metal Seam")
+processStage("Snowfield Ridge")
+processStage("Jagged Rock")
+processStage("Stony Path")
+processStage("Glacial Outcrop")
+processStage("Crystal Pool")
+processStage("Mineral Springs")
+processStage("Lava Field")
+processStage("Molten Canyon")
+processStage("Sunlit Cavern")
+processStage("Emerald Gorge")
+processStage("Ruby Fissure")
+processStage("Sapphire Crevice")
+processStage("Glimmering Crater")
+processStage("Radiant Cave")
+processStage("Shimmering Abyss")
+processStage("Luminous Depths")
+const CountJson = {
+  "Few":0.2,
+  "Some":0.2,
+  "Lots":0.2,
+  "Tons":0.1,
+  "One":0.3,
+}
+    // Utility: randomly select a tile type
+    function StageMineral() {
+      let Mineral = generateRandomItem(stageData[GetStageName()].minerals);
+      if(Mineral == "none"){
+        return "none"
+      }
+      let CountMineral = generateRandomItem(CountJson);
+   if (CountMineral == "Few") {
+    Few = Math.floor(Math.random() * 3) + 1; // 1 to 3
+}
+if (CountMineral == "Some") {
+    Some = Math.floor(Math.random() * 3) + 1; // 1 to 3
+}
+if (CountMineral == "Lots") {
+    Lots = Math.floor(Math.random() * 3) + 1; // 1 to 3
+}
+if (CountMineral == "Tons") {
+    Tons = Math.floor(Math.random() * 3) + 1; // 1 to 3
+}
+if (CountMineral == "One") {
+    One = Math.floor(Math.random() * 9) + 1; // 1 to 9
 }
 
-// 5. Function to create a 4-chunk diamond
-function draw4ChunkDiamond(initX, initY, distX, distY, size, destroyedTiles) {
-  const positions = [
-    { x: initX, y: initY }, // Center
-    { x: initX - distX, y: initY + distY }, // Left
-    { x: initX + distX, y: initY + distY }, // Right
-    { x: initX, y: initY + distY * 2 }, // Bottom
-  ];
+      return CountMineral.replace(/ /g, '_') + "_" +
+       Mineral.replace(/ /g, '_') + "_" +
+       window[CountMineral].toString().replace(/ /g, '_');
 
-  positions.forEach(({ x, y }) => {
-    if (!destroyedTiles.has(`${x},${y}`)) {
-      drawTile(x, y, size);
+    }
+    
+    function StageTile() {
+      let Tile = generateRandomItem(stageData[GetStageName()].tiles).replace(/ /g, '_');;
+      
+      return Tile
+    }
+    function AssignJsonForTileAndMineral(){
+      
+      
+    }
+    function GetStageName(){
+      if(stagesInSequence == true){
+      window.StageName = "DirtPatch"
+      if(layerCount > 20){
+        window.StageName = "RockyDirt"
+      }
+      }else{
+        StageName = StageName //keep it from changing
+      }
+      return StageName
+    }
+    // Utility: randomly select a mineral type or null
+    function getRandomMineralType() {
+      const chance = Math.random();
+      
+        const keys = Object.keys(mineralTypes);
+        return keys[Math.floor(Math.random() * keys.length)];
+      
+      return null;
+    }
+
+    /**
+     * makeNewChunk
+     * Creates one chunk with 4 quadrants, each quadrant has 64 tiles (8×8),
+     * for a total of 256 tiles per chunk.
+     */
+function makeNewChunk(baseX, baseY) {
+    let chunkTiles = [];
+    layerCount++;
+
+    // Distances for isometric tile placement
+    let distX = size * 0.56;
+    let distY = size * 0.25;
+
+    // Offsets for each 64-tile quadrant (the small diamond):
+    const leftOffset = size * 4.5;     // space out quadrants horizontally
+    const verticalOffset = size * 2;   // space out quadrants vertically
+
+    // Offsets for each 256-chunk (the big diamond):
+    // Make these bigger than the above offsets
+    const bigLeftOffset = leftOffset * 2;     
+    const bigVerticalOffset = verticalOffset * 2;  
+
+    // Decide how many “256-chunks” to build
+    //   1 chunk  => 256 tiles total
+    //   4 chunks => 1024 tiles total
+    let NumOf64 = 1;  // default
+    let GroupNum, RowNum, ColNum;
+    if (SizeOfDiamond == 1024) {
+        NumOf64 = 4;
+        GroupNum = 4;
+        RowNum = 8;
+        ColNum = 8;
+    }
+
+    // Decide how many groups (quadrants) & rows/cols in each group
+    // for the smaller diamond
+    if (SizeOfDiamond == 256) {
+        GroupNum = 4;
+        RowNum = 8;
+        ColNum = 8;
+    } else if (SizeOfDiamond == 64) {
+        GroupNum = 0;
+        RowNum = 8;
+        ColNum = 8;
+    } else if (SizeOfDiamond == 16) {
+        GroupNum = 0;
+        RowNum = 4;
+        ColNum = 4;
+    } else if (SizeOfDiamond == 4) {
+        GroupNum = 0;
+        RowNum = 2;
+        ColNum = 2;
+    } else if (SizeOfDiamond == 1) {
+        GroupNum = 0;
+        RowNum = 1;
+        ColNum = 1;
+    } 
+
+    // Iterate over each 256-chunk (for SizeOfDiamond=1024)
+    for (let b64 = 0; b64 < NumOf64; b64++) {
+        // Decide how to shift the *entire* 256-chunk for each b64
+        let subChunkX = baseX;
+        let subChunkY = baseY;
+
+        if (SizeOfDiamond == 1024) {
+            // Assembling four big 256-tile diamonds, offset them in a diamond arrangement
+            if (b64 === 1) {
+                subChunkX += bigLeftOffset;           // move right
+                subChunkY += bigVerticalOffset;       // move down
+            } else if (b64 === 2) {
+                subChunkX -= bigLeftOffset;           // move left
+                subChunkY += bigVerticalOffset;       // move down
+            } else if (b64 === 3) {
+                subChunkY += bigVerticalOffset * 2;   // move further down
+            }
+        }
+
+        // Now build each of the quadrants for this 256-chunk
+        for (let group = 0; group < 4; group++) {
+            if (group > GroupNum) {
+                continue;  // skip unused quadrants for smaller diamond sizes
+            }
+
+            // Start from the offset sub-chunk coordinates
+            let groupX = subChunkX;
+            let groupY = subChunkY;
+
+            // Position each quadrant relative to subChunkX, subChunkY
+            if (group === 1) {
+                groupX += leftOffset;
+                groupY += verticalOffset;
+            } else if (group === 2) {
+                groupX -= leftOffset;
+                groupY += verticalOffset;
+            } else if (group === 3) {
+                groupY += verticalOffset * 2;
+            }
+
+            // For each quadrant, build the tiles based on RowNum and ColNum
+            for (let row = 0; row < RowNum; row++) {
+                for (let col = 0; col < ColNum; col++) {
+                    const tileX = groupX + (col - row) * distX;
+                    const tileY = groupY + (row + col) * distY;
+                    
+                    const tileType = StageTile()
+                    let mineralType = StageMineral()
+                    if(mineralType == "none"){
+                      mineralType = null
+                    }
+
+                    // Determine if the tile is on the perimeter
+                    let isPerimeter = false;
+                   
+                    if (SizeOfDiamond === 1024) {
+                        // For 1024, determine if the tile is on the overall perimeter
+                        // Based on the b64 index and group
+                        // Define perimeter conditions based on the position of the subchunk
+
+                        switch(b64) {
+                            case 0: // Top subchunk
+                                
+                                    isPerimeter = false;
+                                
+                                break;
+                            case 1: // Right subchunk
+                            if(group == 0 ||group == 2  ){
+                                    isPerimeter = false;
+                            }else if (col === ColNum -1) {
+                                    isPerimeter = true;
+                                }
+                                break;
+                            case 2: // Left subchunk
+                                  if(group == 0 ||group == 1  ){
+                                    isPerimeter = false;
+                            }else if ( row === RowNum -1 ) {
+                                    isPerimeter = true;
+                                }
+                                break;
+                            case 3: // Bottom subchunk
+                               if(group == 0   ){
+                                    isPerimeter = false;
+                            }else if (row === RowNum -1 || col === 0 || col === ColNum -1) {
+                                    isPerimeter = true;
+                                }
+                                if(group == 2 && col == 7 && row != 7 ||group == 1 && row == 7 && col != 7 ){
+                                    isPerimeter = false;
+                                }
+                                break;
+                            default:
+                                isPerimeter = false;
+                        }
+                    } else {
+                        // For smaller diamonds, simple perimeter check
+                        if (row === 0 || row === RowNum -1 || col === 0 || col === ColNum -1) {
+                            isPerimeter = true;
+                        }
+                         if(SizeOfDiamond == 256){
+                      if(group == 0){
+                                    isPerimeter = false;
+                      }
+                    }
+                    }
+
+                    chunkTiles.push({
+                        x: tileX,
+                        y: tileY,
+                        row: row,
+                        col: col,
+                        group: group,
+                        show: isPerimeter, 
+                        life: life,
+                        alive: true,
+                        tileType: tileType,
+                        mineralType: mineralType
+                    });
+                }
+            }
+        }
+    }
+
+    return chunkTiles;
+}
+
+
+
+    // Draw a single tile
+    function drawTile(tile) {
+      const tileImg = tileTypes[tile.tileType].image;
+      ctx.drawImage(tileImg, tile.x, tile.y, size, size);
+
+      // Draw the mineral image on top if present
+      if (tile.mineralType) {
+        const mineralImg = mineralTypes[tile.mineralType].image;
+        ctx.drawImage(mineralImg, tile.x, tile.y, size, size);
+      }
+    }
+
+    /**
+     * Decide if a tile should be drawn, according to your “top two + perimeter” rule.
+     * row=0 is top edge in that quadrant, row=7 is bottom edge; same for col=0..7.
+     */
+    function shouldDrawThisTile(tile) {
+      const r = tile.row;
+      const c = tile.col;
+if(tile.show) return true
+      // Otherwise skip
+      return false;
+    }
+
+    // Prepare the initial set of chunks
+    function setupInitialChunks(NumOfLayersAlreadyGenerated) {
+      allChunks = [];
+      let layerCount = 0
+      // 16 chunks “stacked” (you had 32 in your original, adjust as needed)
+      for (let i = NumOfLayersAlreadyGenerated; i < NumOfLayers; i++) {
+        
+        const chunk = makeNewChunk( 
+          ($(window).width() / 2) - size/2,
+          (i * (size / 2)) + size / 2
+        );
+        allChunks.unshift(chunk);
+      }
+    }
+let LifeRemaining = life
+    /**
+     * removeTopTiles
+     * Removes a given number of tiles from the top chunk (the last chunk in allChunks).
+     * Once a chunk is completely destroyed, triggers shouldMove = true to shift.
+     */
+    function removeTopTiles(howManyTiles) {
+      if (allChunks.length === 0 || ContinueDestroying == false) return;
+
+      let topChunk = allChunks[allChunks.length - 1];
+removeTimerMax = 5;
+      removeTimer++;
+      
+      if (removeTimer >= removeTimerMax) {
+        let counter = 0;
+        LifeRemaining -= Damage 
+if(LifeRemaining > 0){
+  return
+}
+        while (counter < howManyTiles) {
+          let topChunk = allChunks[allChunks.length - 1];
+          removeTimer = 0;
+          LifeRemaining = topChunk[0].life * DestroyAtOnce
+
+          if (currentTileToDestroy >= 0) {
+            if (topChunk[currentTileToDestroy]) {
+              for(i = SizeOfDiamond - 1;i >= currentTileToDestroy;i--){
+              topChunk[i].alive = false;
+              }
+              
+              //console.log(`Destroyed tile ${currentTileToDestroy} in chunk ${allChunks.length - 1}`);
+              currentTileToDestroy--;
+              TilesDestroyed++
+            }
+            $('.Layer').html("Layer "+LayersRemoved+"</br></br>Tile "+TilesDestroyed)
+            if (currentTileToDestroy < 0) {
+              LayersRemoved++
+              ContinueDestroying = false
+              setTimeout(function(){
+                moveChunksUp();
+                ContinueDestroying = true
+              },WaitTimeForMoveChunksUp)
+              
+              currentTileToDestroy = SizeOfDiamond - 1; // Reset to last index for a 256-tile chunk
+            }
+          }
+          counter++;
+        }
+      }
+    }
+function playSoundOnce(soundPath) {
+  const audio = new Audio(soundPath);
+  audio.play()
+    .catch(error => {
+      console.error('Error playing sound:', error);
+    });
+}
+    /**
+     * moveChunksUp
+     * Moves all chunk tiles upward by size/2 after the topmost chunk is fully destroyed,
+     * and adds a new chunk at the bottom.
+     */
+    function moveChunksUp() {
+      
+
+      // Move existing chunks up
+      for (let chunk of allChunks) {
+        for (let tile of chunk) {
+          tile.y -= size / 2;
+        }
+      }
+
+      // Remove the topmost chunk (it's all destroyed)
+      allChunks.pop();
+
+      // Add a fresh chunk at the bottom
+      const firstChunk = allChunks[0];
+      const newY = Math.round( firstChunk[0].y + size / 2);
+      const newChunk = makeNewChunk($(window).width() / 2 - size/2, newY);
+      allChunks.unshift(newChunk);
+
+      // Reset
+      shouldMove = false;
+      JustMoved = true;
+    }
+
+    // Click to destroy a tile manually
+    canvas.addEventListener("click", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      for (let chunk of allChunks) {
+        for (let tile of chunk) {
+          if (
+            tile.alive &&
+            mouseX > tile.x && mouseX < tile.x + size &&
+            mouseY > tile.y && mouseY < tile.y + size
+          ) {
+            tile.alive = false;
+            console.log(`Tile destroyed at (${tile.x}, ${tile.y})`);
+            return;
+          }
+        }
+      }
+    });
+let pSize = size;
+    // Main loop
+    function animate(OneTime = true) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      
+
+      // Destroy a bunch of tiles from the top chunk
+      removeTopTiles(DestroyAtOnce);
+
+      // Shift up if the top chunk is fully destroyed
+      
+chunkcount = 0
+      // Draw only the tiles that qualify
+      for (let chunk of allChunks) {
+        chunkcount++
+        for (let tile of chunk) {
+          if (!tile.alive ){
+            
+          }else if(shouldDrawThisTile(tile)){
+            drawTile(tile);
+          }else if(chunkcount > allChunks.length - 3){
+            drawTile(tile);
+          }
+          
+        }
+      }
+  JustMoved = false
+  if(OneTime){
+      requestAnimationFrame(animate);
+      }
+    }
+
+    // Start up
+    function startAnimation() {
+      document.getElementById('loading').style.display = 'none';
+      JustMoved = true
+      setupInitialChunks(1);
+      animate();
+    }
+
+    // Load images, then begin
+    loadImages(() => {
+      console.log("All images loaded successfully.");
+      startAnimation();
+    });
+function saveImagesArray() {
+  // Returns an array-of-arrays of image attributes for each chunk's tiles
+  return allChunks.map(chunk => 
+    chunk.map(tile => ({
+      tileType: tile.tileType,
+      mineralType: tile.mineralType,
+      alive: tile.alive
+    }))
+  );
+}
+
+function applyImagesArray(imagesArray) {
+  // Find the highest chunk index in the saved data
+  const savedMaxChunkIndex = imagesArray.length - 1;
+  // Find the highest chunk index in the current game
+  const currentMaxChunkIndex = allChunks.length - 1;
+  
+  // Start from the highest chunk and work downwards
+  for (let savedIndex = savedMaxChunkIndex; savedIndex >= 0; savedIndex--) {
+    // Calculate where this chunk should go in the current game
+    // For example, if we have more chunks now than in the save,
+    // we want to place the highest saved chunk at the highest current position
+    const targetIndex = currentMaxChunkIndex - (savedMaxChunkIndex - savedIndex);
+    
+    // Skip if the target index would be negative
+    if (targetIndex < 0) continue;
+    
+    // Skip if the chunk doesn't exist in either array
+    if (!imagesArray[savedIndex] || !allChunks[targetIndex]) continue;
+
+    // Apply the data to each tile in the chunk
+    allChunks[targetIndex].forEach((tile, tileIndex) => {
+      if (!imagesArray[savedIndex][tileIndex]) return;
+
+      tile.tileType = imagesArray[savedIndex][tileIndex].tileType;
+      tile.mineralType = imagesArray[savedIndex][tileIndex].mineralType;
+      tile.alive = imagesArray[savedIndex][tileIndex].alive;
+    });
+  }
+}
+/**
+ * Injects a mineral into a specified stage across all specified mining levels in the menuData structure.
+ * @param {object} menuData - The menu data object to update.
+ * @param {string} stageName - The name of the stage to add the mineral to (e.g., "Dirt Patch").
+ * @param {string} mineralName - The name of the mineral to add (e.g., "Emerald").
+ * @param {string} imgPath - The image path for the mineral (e.g., "img/badges/mining.png").
+ */
+function injectMineralToStage(menuData, TheStageName, mineralName, imgPath) {
+    const miningLevels = ["1", "4", "16", "64", "256", "1024"]; // Levels to add the mineral under
+    console.log(TheStageName)
+    // Define the default properties for the new mineral
+    const mineralProperties = {
+        img: imgPath,
+        Unlocked: true,
+        SetBackground: "black",
+        ColorOfFont: "White",
+        children: {}
+    };
+
+    // Navigate to the Mining section
+    let miningSection = menuData["Main Menu"]?.children?.Mining?.children;
+    if (!miningSection) {
+        console.error("Mining section not found in menuData.");
+        return;
+    }
+
+    // Add the mineral to the specified stage in each mining level
+    for (const level of miningLevels) {
+        if (!miningSection[level]) {
+            console.warn(`Level ${level} not found under Mining.`);
+            continue;
+        }
+
+        let stage = miningSection[level].children?.[TheStageName];
+        if (!stage) {
+            console.warn(`Stage '${TheStageName}' not found under level ${level} in Mining.`);
+            continue;
+        }
+
+        // Ensure the stage has a children property
+        if (!stage.children) {
+            stage.children = {};
+        }
+
+        // Add the mineral to the specified stage
+        if (stage.children[mineralName]) {
+            console.warn(`Mineral '${mineralName}' already exists under stage '${TheStageName}' in level ${level}.`);
+        } else {
+            stage.children[mineralName] = { ...mineralProperties };
+            console.log(`Mineral '${mineralName}' has been added to stage '${TheStageName}' in level ${level}.`);
+        }
+    }
+}
+//injectMineralToStage(menuData,"Dirt Patch", "Emerald", "")
+
+
+
+console.log(JSON.stringify(menuData, null, 2));
+$(document).on('wheel mousewheel', function(event) {
+  if($('.menu-content').is(":visible")){
+    return
+  }
+    var delta;
+    
+    // Normalize delta for cross-browser support
+    if (event.originalEvent.wheelDelta) {
+        delta = event.originalEvent.wheelDelta; // For most browsers (positive or negative)
+    } else {
+        delta = -event.originalEvent.deltaY; // For Firefox
+    }
+
+    if (delta > 0) {
+      if(size < 90 && SizeOfDiamond == 256 || size < 150 && SizeOfDiamond == 64 || size < 150 && SizeOfDiamond == 16 || size < 150 && SizeOfDiamond == 4 || size < 350 && SizeOfDiamond == 1){
+
+       size = size * 1.1
+        imagesArray = saveImagesArray()
+        NumOfLayers = $('.TileContainer').height()/size * 2 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      }
+    } else {
+      if(size > 6){
+       size = size * .9
+        imagesArray = saveImagesArray()
+        NumOfLayers = $('.TileContainer').height()/size * 2 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray)
+      animate(false);
+      }
+    }
+});
+$(document).ready(function() {
+    // Create the "View" div
+    $('body').append('<div id="viewDiv">View</div>');
+    
+    // Define each button's behavior here
+let buttonActions = [
+  () => {
+    if(SizeOfDiamond == 256){
+      size = 15
+    }
+    if(SizeOfDiamond == 64){
+      size = 20
+    }
+
+    imagesArray = saveImagesArray()
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    animate(false);
+  },
+  () => {
+    if(SizeOfDiamond == 256){
+      size = 40
+    }
+    if(SizeOfDiamond == 64){
+      size = 50
+    }
+
+    imagesArray = saveImagesArray()
+    PreviousNumOfLayers = NumOfLayers
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    animate(false);
+  },
+  () => {
+    if(SizeOfDiamond == 256){
+      size = 60
+    }
+    if(SizeOfDiamond == 64){
+      size = 80
+    }
+
+    imagesArray = saveImagesArray()
+    PreviousNumOfLayers = NumOfLayers
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    animate(false);
+  },
+  () => {
+    if(SizeOfDiamond == 256){
+      size = 80
+    }
+    if(SizeOfDiamond == 64){
+      size = 100
+    }
+
+    imagesArray = saveImagesArray()
+    PreviousNumOfLayers = NumOfLayers
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    animate(false);
+  },
+  () => {
+    if(SizeOfDiamond == 256){
+      size = 100
+    }
+    if(SizeOfDiamond == 64){
+      size = 150
+    }
+
+    imagesArray = saveImagesArray()
+    PreviousNumOfLayers = NumOfLayers
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    animate(false);
+  }
+];
+
+
+    // Create and place 5 buttons with absolute positioning
+    for (let i = 1; i <= 5; i++) {
+      // Make a new button
+      const $btn = $('<button class="myButton">' + i + '</button>');
+      
+      // Position each button horizontally below "View"
+      // Adjust top/left values to your preference
+      $btn.css({
+        top: '70px',
+        left: (20 + (i - 1) * 60) + 'px',
+        
+      });
+      
+      // Attach the click handler from our array
+       // Attach the click handler
+  $btn.on('click', function () {
+    // Remove 'lastClickedView' class from all buttons
+    $('.myButton').removeClass('lastClickedView');
+    
+    // Add 'lastClickedView' class to the clicked button
+    $(this).addClass('lastClickedView');
+    
+    // Call the corresponding action
+    buttonActions[i - 1]();
+  });
+      
+      // Add the button to the page
+      $('body').append($btn);
     }
   });
-}
+  
+(function($) {
+  $.fn.animateBackgroundSize = function(scaleMin, scaleMax, duration) {
+    return this.each(function() {
+      let $element = $(this);
+      let scaleUp = true;
 
-// 6. Function to create a 16-chunk diamond structure
-function draw16ChunkDiamond(x, y, size, destroyedTiles) {
-  const distX = size * 0.52; // Horizontal offset
-  const distY = size * 0.25; // Vertical offset
+      function toggleBackgroundSize() {
+        // Start the transition immediately
+        let targetScale = scaleUp ? `${scaleMax}%` : `${scaleMin}%`;
+        $element.css({
+          transition: `background-size ${duration}ms ease-in-out`,
+          "background-size": targetScale
+        });
+        scaleUp = !scaleUp;
 
-  const distYBetween4ChunkLeftAndRight = size / 2;
-  const distYBetween4ChunkTopBottom = size;
-  const leftOffset = size;
+        // Schedule the next animation after the duration
+        setTimeout(toggleBackgroundSize, duration);
+      }
 
-  // Draw 4-chunk diamonds to form a 16-chunk structure
-  draw4ChunkDiamond(x, y, distX, distY, size, destroyedTiles); // Top-right
-  draw4ChunkDiamond(x + leftOffset, y + distYBetween4ChunkLeftAndRight, distX, distY, size, destroyedTiles); // Bottom-right
-  draw4ChunkDiamond(x - leftOffset, y + distYBetween4ChunkLeftAndRight, distX, distY, size, destroyedTiles); // Bottom-left
-  draw4ChunkDiamond(x, y + distYBetween4ChunkTopBottom, distX, distY, size, destroyedTiles); // Top-left
-}
-
-// 7. Store destroyed tiles
-const destroyedTiles = new Set();
-
-// 8. Handle click events
-canvas.addEventListener("click", (event) => {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
-
-  const size = 150;
-  const distX = size * 0.52;
-  const distY = size * 0.25;
-
-  // Calculate tile coordinates based on click position
-  const tileX = Math.round(mouseX / distX) * distX;
-  const tileY = Math.round(mouseY / distY) * distY;
-
-  destroyedTiles.add(`${tileX},${tileY}`);
-});
-
-// 9. Animation loop to render everything
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw the 16-chunk diamond structures
-  draw16ChunkDiamond(300, 75 + 6 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75 + 5 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75 + 4 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75 + 3 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75 + 2 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75 + 1 * 75, 150, destroyedTiles);
-  draw16ChunkDiamond(300, 75, 150, destroyedTiles);
-
-  requestAnimationFrame(animate); // Repeat the draw loop
-}
-
-// 10. Start rendering once the images are loaded
-tileImage.onload = () => {
-  mineralImage.onload = () => {
-    animate(); // Start the animation loop
+      // Apply the initial background size and start the animation
+      $element.css("background-size", `${scaleMin}%`);
+      setTimeout(toggleBackgroundSize, 0); // Start immediately
+    });
   };
-};
-</script>
+  $('body').animateBackgroundSize(25,90,160000)
+  $('.Layer').animateBackgroundSize(25,90,160000)
+  
+})(jQuery);
 
+
+setInterval(function(){
+if(pCurrentOption == CurrentOption && pPreviousOption  == PreviousOption){
+  return
+}
+function LoadStage(SetSize, SetStageName){
+   stagesInSequence = false
+   StageName = SetStageName
+
+   AssignJsonForTileAndMineral() 
+   SizeOfDiamond = SetSize;
+    window.currentTileToDestroy = SizeOfDiamond - 1;
+   
+    PreviousNumOfLayers = NumOfLayers;
+    NumOfLayers = $('.TileContainer').height() / size * 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true;
+    setupInitialChunks(1);
+   
+    animate(false);
+    $('.myButton').last().click()
+}
+pPreviousOption = PreviousOption
+pCurrentOption = CurrentOption
+
+
+if (validOptions[CurrentOption]) {
+    const stage = parseInt(PreviousOption, 10);
+    if (!isNaN(stage)) {
+        LoadStage(stage, validOptions[CurrentOption]);
+    }
+}
+
+},100)
+})
+  </script>
 </body>
 </html>
