@@ -486,7 +486,7 @@ window.menuData = {
  * @param {string} stageName - The name of the stage to add (e.g., "Dirt Patch").
  */
 function injectStageToMining(menuData, stageName) {
-    const miningLevels = ["1", "4", "16", "64", "256"]; // Levels to add the stage under
+    const miningLevels = ["1", "4", "16", "64", "256","1024"]; // Levels to add the stage under
 
     // Define the default properties for the new stage
     const stageProperties = {
@@ -581,12 +581,17 @@ injectStageToMining(menuData, "Luminous Depths");
 setInterval(function(){
     window.CurrentOption = $('.breadcrumb-button').last().text()
     window.PreviousOption = $('.breadcrumb-button').last().prev().text()
-    
+    window.SecondOption = $('.breadcrumb-button').eq(1).text();
+    window.ThirdOption = $('.breadcrumb-button').eq(2).text();
+    window.FourthOption = $('.breadcrumb-button').eq(3).text();
 },500)
 window.CurrentOption = $('.breadcrumb-button').last().text()
     window.PreviousOption = $('.breadcrumb-button').last().prev().text()
     window.pPreviousOption = PreviousOption
     window.pCurrentOption = CurrentOption
+    window.SecondOption = $('.breadcrumb-button').eq(1).text();
+    window.ThirdOption = $('.breadcrumb-button').eq(2).text();
+    window.FourthOption = $('.breadcrumb-button').eq(3).text();
 /*************************************************
  * B. HELPER STUFF
  *************************************************/

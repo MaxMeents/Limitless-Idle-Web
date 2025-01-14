@@ -176,7 +176,7 @@ $(document).ready(function(){
         JustMoved = true
         setupInitialChunks(1);
         applyImagesArray(imagesArray)
-      animate(false);
+      
     })
     function resizeCanvas() {
       canvas.width = $(".TileContainer").width();
@@ -3117,6 +3117,7 @@ if(tile.show) return true
     // Prepare the initial set of chunks
     function setupInitialChunks(NumOfLayersAlreadyGenerated) {
       allChunks = [];
+      window.RenderBecauseOfNewLoad = true
       let layerCount = 0
       // 16 chunks “stacked” (you had 32 in your original, adjust as needed)
       for (let i = NumOfLayersAlreadyGenerated; i < NumOfLayers; i++) {
@@ -3144,9 +3145,7 @@ removeTimerMax = 5;
       if (removeTimer >= removeTimerMax) {
         let counter = 0;
         LifeRemaining -= Damage 
-if(LifeRemaining > 0){
-  return
-}
+
         while (counter < howManyTiles) {
           let topChunk = allChunks[allChunks.length - 1];
           removeTimer = 0;
@@ -3228,7 +3227,7 @@ function playSoundOnce(soundPath) {
             mouseY > tile.y && mouseY < tile.y + size
           ) {
             tile.alive = false;
-            console.log(`Tile destroyed at (${tile.x}, ${tile.y})`);
+            
             return;
           }
         }
@@ -3236,36 +3235,41 @@ function playSoundOnce(soundPath) {
     });
 let pSize = size;
     // Main loop
-    function animate(OneTime = true) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      
+ const fps = 10; // Target frame rate
+const interval = 1000 / fps; // Interval in milliseconds
+let lastTime = 0; // Track the last frame time
 
-      // Destroy a bunch of tiles from the top chunk
-      removeTopTiles(DestroyAtOnce);
+function animate(currentTime) {
+    // Calculate the time elapsed since the last frame
+    if (currentTime - lastTime >= interval || RenderBecauseOfNewLoad) {
+        lastTime = currentTime;
 
-      // Shift up if the top chunk is fully destroyed
-      
-chunkcount = 0
-      // Draw only the tiles that qualify
-      for (let chunk of allChunks) {
-        chunkcount++
-        for (let tile of chunk) {
-          if (!tile.alive ){
-            
-          }else if(shouldDrawThisTile(tile)){
-            drawTile(tile);
-          }else if(chunkcount > allChunks.length - 3){
-            drawTile(tile);
-          }
-          
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Destroy a bunch of tiles from the top chunk
+        removeTopTiles(DestroyAtOnce);
+
+        // Reset chunk count and draw only the tiles that qualify
+        RenderBecauseOfNewLoad = false;
+        chunkcount = 0;
+        for (let chunk of allChunks) {
+            chunkcount++;
+            for (let tile of chunk) {
+                if (!tile.alive) {
+                    // Do nothing if the tile is not alive
+                } else if (shouldDrawThisTile(tile)) {
+                    drawTile(tile);
+                } else if (chunkcount > allChunks.length - 3) {
+                    drawTile(tile);
+                }
+            }
         }
-      }
-  JustMoved = false
-  if(OneTime){
-      requestAnimationFrame(animate);
-      }
+        JustMoved = false;
     }
+
+    // Request the next frame
+    requestAnimationFrame(animate);
+}
 
     // Start up
     function startAnimation() {
@@ -3329,7 +3333,7 @@ function applyImagesArray(imagesArray) {
  */
 function injectMineralToStage(menuData, TheStageName, mineralName, imgPath) {
     const miningLevels = ["1", "4", "16", "64", "256", "1024"]; // Levels to add the mineral under
-    console.log(TheStageName)
+    
     // Define the default properties for the new mineral
     const mineralProperties = {
         img: imgPath,
@@ -3366,10 +3370,10 @@ function injectMineralToStage(menuData, TheStageName, mineralName, imgPath) {
 
         // Add the mineral to the specified stage
         if (stage.children[mineralName]) {
-            console.warn(`Mineral '${mineralName}' already exists under stage '${TheStageName}' in level ${level}.`);
+            
         } else {
             stage.children[mineralName] = { ...mineralProperties };
-            console.log(`Mineral '${mineralName}' has been added to stage '${TheStageName}' in level ${level}.`);
+            
         }
     }
 }
@@ -3377,13 +3381,13 @@ function injectMineralToStage(menuData, TheStageName, mineralName, imgPath) {
 
 
 
-console.log(JSON.stringify(menuData, null, 2));
-$(document).on('wheel mousewheel', function(event) {
-  if($('.menu-content').is(":visible")){
-    return
-  }
+
+$(document).on('wheel mousewheel', function (event) {
+    if ($('.breadcrumb-button').is(":visible")) {
+        return;
+    }
     var delta;
-    
+
     // Normalize delta for cross-browser support
     if (event.originalEvent.wheelDelta) {
         delta = event.originalEvent.wheelDelta; // For most browsers (positive or negative)
@@ -3391,121 +3395,201 @@ $(document).on('wheel mousewheel', function(event) {
         delta = -event.originalEvent.deltaY; // For Firefox
     }
 
-    if (delta > 0) {
-      if(size < 90 && SizeOfDiamond == 256 || size < 150 && SizeOfDiamond == 64 || size < 150 && SizeOfDiamond == 16 || size < 150 && SizeOfDiamond == 4 || size < 350 && SizeOfDiamond == 1){
+    // Define maximum size limits for specific values
+    const maxSizes = {
+        1: 270,
+        4: 270,
+        16: 219,
+        64: 148,
+        256: 96,
+        1024: 47
+    };
 
-       size = size * 1.1
-        imagesArray = saveImagesArray()
-        NumOfLayers = $('.TileContainer').height()/size * 2 
+    if (delta > 0) {
+        // Zoom in
+        size = size * 1.1;
+
+        // Apply maximum constraints
+        const maxSize = maxSizes[SizeOfDiamond] || Infinity;
+        if (size > maxSize) {
+            size = maxSize;
+        }
+
+        imagesArray = saveImagesArray();
+        NumOfLayers = $('.TileContainer').height() / size * 2;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        JustMoved = true
+        JustMoved = true;
         setupInitialChunks(1);
-        applyImagesArray(imagesArray)
-      animate(false);
-      }
+        applyImagesArray(imagesArray);
+
+        console.log(size);
     } else {
-      if(size > 6){
-       size = size * .9
-        imagesArray = saveImagesArray()
-        NumOfLayers = $('.TileContainer').height()/size * 2 
+        // Zoom out
+        size = size * 0.9;
+
+        // Apply maximum constraints
+        const maxSize = maxSizes[size] || Infinity;
+        if (size > maxSize) {
+            size = maxSize;
+        }
+
+        imagesArray = saveImagesArray();
+        NumOfLayers = $('.TileContainer').height() / size * 2;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        JustMoved = true
+        JustMoved = true;
         setupInitialChunks(1);
-        applyImagesArray(imagesArray)
-      animate(false);
-      }
+        applyImagesArray(imagesArray);
+
+        console.log(size);
     }
 });
+
 $(document).ready(function() {
     // Create the "View" div
     $('body').append('<div id="viewDiv">View</div>');
     
     // Define each button's behavior here
 let buttonActions = [
-  () => {
-    if(SizeOfDiamond == 256){
-      size = 15
+ () => {
+    if (SizeOfDiamond == 256) {
+        size = Math.max(96 * 0.7 ** 4, 5); // 4 levels down
     }
-    if(SizeOfDiamond == 64){
-      size = 20
+    if (SizeOfDiamond == 64) {
+        size = Math.max(148 * 0.7 ** 4, 5);
     }
-
-    imagesArray = saveImagesArray()
-    NumOfLayers = $('.TileContainer').height()/size * 2
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    JustMoved = true
-    setupInitialChunks(1);
-    applyImagesArray(imagesArray)
-    animate(false);
-  },
-  () => {
-    if(SizeOfDiamond == 256){
-      size = 40
+    if (SizeOfDiamond == 1) {
+        size = Math.max(270 * 0.7 ** 4, 5);
     }
-    if(SizeOfDiamond == 64){
-      size = 50
+    if (SizeOfDiamond == 4) {
+        size = Math.max(270 * 0.7 ** 4, 5);
+    }
+    if (SizeOfDiamond == 16) {
+        size = Math.max(219 * 0.7 ** 4, 5);
+    }
+    if (SizeOfDiamond == 1024) {
+        size = Math.max(47 * 0.7 ** 4, 5);
     }
 
-    imagesArray = saveImagesArray()
-    PreviousNumOfLayers = NumOfLayers
-    NumOfLayers = $('.TileContainer').height()/size * 2
+    imagesArray = saveImagesArray();
+    NumOfLayers = $('.TileContainer').height() / size * 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    JustMoved = true
+    JustMoved = true;
     setupInitialChunks(1);
-    applyImagesArray(imagesArray)
-    animate(false);
-  },
-  () => {
-    if(SizeOfDiamond == 256){
-      size = 60
+    applyImagesArray(imagesArray);
+},
+() => {
+    if (SizeOfDiamond == 256) {
+        size = Math.max(96 * 0.7 ** 3, 5); // 3 levels down
     }
-    if(SizeOfDiamond == 64){
-      size = 80
+    if (SizeOfDiamond == 64) {
+        size = Math.max(148 * 0.7 ** 3, 5);
+    }
+    if (SizeOfDiamond == 1) {
+        size = Math.max(270 * 0.7 ** 3, 5);
+    }
+    if (SizeOfDiamond == 4) {
+        size = Math.max(270 * 0.7 ** 3, 5);
+    }
+    if (SizeOfDiamond == 16) {
+        size = Math.max(219 * 0.7 ** 3, 5);
+    }
+    if (SizeOfDiamond == 1024) {
+        size = Math.max(47 * 0.7 ** 3, 5);
     }
 
-    imagesArray = saveImagesArray()
-    PreviousNumOfLayers = NumOfLayers
-    NumOfLayers = $('.TileContainer').height()/size * 2
+    imagesArray = saveImagesArray();
+    PreviousNumOfLayers = NumOfLayers;
+    NumOfLayers = $('.TileContainer').height() / size * 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    JustMoved = true
+    JustMoved = true;
     setupInitialChunks(1);
-    applyImagesArray(imagesArray)
-    animate(false);
-  },
-  () => {
-    if(SizeOfDiamond == 256){
-      size = 80
+    applyImagesArray(imagesArray);
+},
+() => {
+    if (SizeOfDiamond == 256) {
+        size = Math.max(96 * 0.7 ** 2, 5); // 2 levels down
     }
-    if(SizeOfDiamond == 64){
-      size = 100
+    if (SizeOfDiamond == 64) {
+        size = Math.max(148 * 0.7 ** 2, 5);
+    }
+    if (SizeOfDiamond == 1) {
+        size = Math.max(270 * 0.7 ** 2, 5);
+    }
+    if (SizeOfDiamond == 4) {
+        size = Math.max(270 * 0.7 ** 2, 5);
+    }
+    if (SizeOfDiamond == 16) {
+        size = Math.max(219 * 0.7 ** 2, 5);
+    }
+    if (SizeOfDiamond == 1024) {
+        size = Math.max(47 * 0.7 ** 2, 5);
     }
 
-    imagesArray = saveImagesArray()
-    PreviousNumOfLayers = NumOfLayers
-    NumOfLayers = $('.TileContainer').height()/size * 2
+    imagesArray = saveImagesArray();
+    PreviousNumOfLayers = NumOfLayers;
+    NumOfLayers = $('.TileContainer').height() / size * 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    JustMoved = true
+    JustMoved = true;
     setupInitialChunks(1);
-    applyImagesArray(imagesArray)
-    animate(false);
-  },
-  () => {
-    if(SizeOfDiamond == 256){
-      size = 100
+    applyImagesArray(imagesArray);
+},
+() => {
+    if (SizeOfDiamond == 256) {
+        size = Math.max(96 * 0.7, 5); // 1 level down
     }
-    if(SizeOfDiamond == 64){
-      size = 150
+    if (SizeOfDiamond == 64) {
+        size = Math.max(148 * 0.7, 5);
+    }
+    if (SizeOfDiamond == 1) {
+        size = Math.max(270 * 0.7, 5);
+    }
+    if (SizeOfDiamond == 4) {
+        size = Math.max(270 * 0.7, 5);
+    }
+    if (SizeOfDiamond == 16) {
+        size = Math.max(219 * 0.7, 5);
+    }
+    if (SizeOfDiamond == 1024) {
+        size = Math.max(47 * 0.7, 5);
     }
 
-    imagesArray = saveImagesArray()
-    PreviousNumOfLayers = NumOfLayers
-    NumOfLayers = $('.TileContainer').height()/size * 2
+    imagesArray = saveImagesArray();
+    PreviousNumOfLayers = NumOfLayers;
+    NumOfLayers = $('.TileContainer').height() / size * 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    JustMoved = true
+    JustMoved = true;
     setupInitialChunks(1);
-    applyImagesArray(imagesArray)
-    animate(false);
-  }
+    applyImagesArray(imagesArray);
+},
+() => {
+    if (SizeOfDiamond == 256) {
+        size = 96; // Maximum for this zoom level
+    }
+    if (SizeOfDiamond == 64) {
+        size = 148;
+    }
+    if (SizeOfDiamond == 1) {
+        size = 270;
+    }
+    if (SizeOfDiamond == 4) {
+        size = 270;
+    }
+    if (SizeOfDiamond == 16) {
+        size = 219;
+    }
+    if (SizeOfDiamond == 1024) {
+        size = 47;
+    }
+
+    imagesArray = saveImagesArray();
+    PreviousNumOfLayers = NumOfLayers;
+    NumOfLayers = $('.TileContainer').height() / size * 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true;
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray);
+}
+
 ];
 
 
@@ -3588,17 +3672,26 @@ function LoadStage(SetSize, SetStageName){
     JustMoved = true;
     setupInitialChunks(1);
    
-    animate(false);
+    
     $('.myButton').last().click()
+}
+function LoadStageWithMemory(){
+ imagesArray = saveImagesArray()
+    NumOfLayers = $('.TileContainer').height()/size * 2
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    JustMoved = true
+    setupInitialChunks(1);
+    applyImagesArray(imagesArray)
+    
 }
 pPreviousOption = PreviousOption
 pCurrentOption = CurrentOption
 
 
-if (validOptions[CurrentOption]) {
-    const stage = parseInt(PreviousOption, 10);
+if (validOptions[FourthOption]) {
+    const stage = parseInt(ThirdOption, 10);
     if (!isNaN(stage)) {
-        LoadStage(stage, validOptions[CurrentOption]);
+        LoadStage(stage, validOptions[FourthOption]);
     }
 }
 
