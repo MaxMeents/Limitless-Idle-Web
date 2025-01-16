@@ -19,6 +19,7 @@ z-index:500;
                 padding: 0;
                 left: ${x}px;
                 top: ${y}px;
+                background-blend-mode: multiply;
             }
             .menu-content {
                 width: 45px; /* 75px - (15px padding * 2) */
@@ -84,402 +85,120 @@ z-index:500;
 window.menuData = {
   "Main Menu": {
     img: "img/High Qualikty Tiles/Dirt 1 512.png",
-    Unlocked:true,
-    SetBackground: "black",
+    Unlocked: true,
+    SetBackground: "url('img/Ui/blue star tile.png')",
     ColorOfFont: "White",
     children: {
       "Farming": {
         img: "img/badges/farming.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
-        children: {
-          "Crops": {
-            img: "img/badges/farming.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Wheat": {
-                img: "img/badges/farming.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Corn": {
-                img: "img/badges/farming.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          },
-          "Livestock": {
-            img: "img/badges/farming.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Cattle": {
-                img: "img/badges/farming.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Sheep": {
-                img: "img/badges/farming.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          }
-        }
+        children: {}
       },
       "Fishing": {
         img: "img/badges/fishing.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
-        children: {
-          "Saltwater": {
-            img: "img/badges/fishing.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Tuna": {
-                img: "img/badges/fishing.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Marlin": {
-                img: "img/badges/fishing.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          },
-          "Freshwater": {
-            img: "img/badges/fishing.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Trout": {
-                img: "img/badges/fishing.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Bass": {
-                img: "img/badges/fishing.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          }
-        }
+        children: {}
       },
       "Hunting": {
         img: "img/badges/hunting.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
+        ColorOfFont: "White",
+        children: {}
+      },
+      "Mining": {
+        img: "img/badges/mining.png",
+        Unlocked: true,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
         children: {
-          "Big Game": {
-            img: "img/badges/hunting.png",
-            Unlocked:false,
-            SetBackground: "black",
+          "1": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
             ColorOfFont: "White",
-            children: {
-              "Deer": {
-                img: "img/badges/hunting.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Elk": {
-                img: "img/badges/hunting.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
+            children: {}
           },
-          "Small Game": {
-            img: "img/badges/hunting.png",
-            Unlocked:false,
-            SetBackground: "black",
+          "4": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
             ColorOfFont: "White",
-            children: {
-              "Rabbit": {
-                img: "img/badges/hunting.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Squirrel": {
-                img: "img/badges/hunting.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
+            children: {}
+          },
+          "16": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
+            ColorOfFont: "White",
+            children: {}
+          },
+          "64": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
+            ColorOfFont: "White",
+            children: {}
+          },
+          "256": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
+            ColorOfFont: "White",
+            children: {}
+          },
+          "1024": {
+            img: "img/badges/mining.png",
+            Unlocked: true,
+            SetBackground: "url('img/Ui/brown bg.png')",
+            ColorOfFont: "White",
+            children: {}
           }
         }
       },
-      "Mining": {
-  "img": "img/badges/mining.png",
-  "Unlocked": true,
-  "SetBackground": "black",
-  "ColorOfFont": "White",
-  "children": {
-    "1": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    },
-    "4": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    },
-    "16": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    },
-    "64": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    },
-    "256": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    },
-    "1024": {
-      "img": "img/badges/mining.png",
-      "Unlocked": true,
-      "SetBackground": "black",
-      "ColorOfFont": "White",
-      "children": {
-        
-      }
-    }
-  }
-},
-
       "Tailoring": {
         img: "img/badges/tailoring.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
-        children: {
-          "Clothing": {
-            img: "img/badges/tailoring.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Shirts": {
-                img: "img/badges/tailoring.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Pants": {
-                img: "img/badges/tailoring.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          },
-          "Accessories": {
-            img: "img/badges/tailoring.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Hats": {
-                img: "img/badges/tailoring.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Scarves": {
-                img: "img/badges/tailoring.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          }
-        }
+        children: {}
       },
       "Alchemy": {
         img: "img/badges/alchemy.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
-        children: {
-          "Potions": {
-            img: "img/badges/alchemy.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Healing": {
-                img: "img/badges/alchemy.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Mana": {
-                img: "img/badges/alchemy.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          },
-          "Ingredients": {
-            img: "img/badges/alchemy.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Herbs": {
-                img: "img/badges/alchemy.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Minerals": {
-                img: "img/badges/alchemy.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          }
-        }
+        children: {}
       },
       "Blacksmithing": {
         img: "img/badges/blacksmith_craft.png",
-        Unlocked:false,
-        SetBackground: "black",
+        Unlocked: false,
+        SetBackground: "url('img/Ui/rainbow bg.png')",
         ColorOfFont: "White",
-        children: {
-          "Weapons": {
-            img: "img/badges/blacksmith_craft.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Swords": {
-                img: "img/badges/blacksmith_craft.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Axes": {
-                img: "img/badges/blacksmith_craft.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          },
-          "Armor": {
-            img: "img/badges/blacksmith_craft.png",
-            Unlocked:false,
-            SetBackground: "black",
-            ColorOfFont: "White",
-            children: {
-              "Helmets": {
-                img: "img/badges/blacksmith_craft.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              },
-              "Shields": {
-                img: "img/badges/blacksmith_craft.png",
-                Unlocked:false,
-                SetBackground: "black",
-                ColorOfFont: "White",
-                children: {}
-              }
-            }
-          }
-        }
+        children: {}
       }
     }
   },
   "Options": {
     img: "img/High Qualikty Tiles/Dirt 1 512.png",
-    Unlocked:true,
-    SetBackground: "black",
+    Unlocked: true,
+    SetBackground: "url('img/Ui/blue star tile.png')",
     ColorOfFont: "White",
     children: {}
   },
   "Credits": {
     img: "img/High Qualikty Tiles/Dirt 1 512.png",
-    Unlocked:true,
-    SetBackground: "black",
+    Unlocked: true,
+    SetBackground: "url('img/Ui/blue star tile.png')",
     ColorOfFont: "White",
     children: {}
   }
 };
+
 /**
  * Injects a stage into all specified levels under Mining in the menuData structure.
  * @param {object} menuData - The menu data object to update.
@@ -684,7 +403,7 @@ function drawHalfCircle($container, circleData) {
     // add image
     if (node && node.img) {
       var $img = $("<img>").attr("src", node.img)
-      $btn.css({background:node.SetBackground,color:node.ColorOfFont,borderRadius:"15px",fontSize:"25px",fontWeight:1000})
+      $btn.css({backgroundImage:node.SetBackground,color:node.ColorOfFont})
       $btn.append($img);
       if(node.Unlocked){
         $btn.css({opacity:1})
@@ -726,6 +445,7 @@ function drawHalfCircle($container, circleData) {
  * E. WHEEL events
  *************************************************/
 function onWheelFirst(e) {
+ 
   e.preventDefault();
   if (circleStack.length < 1) return;
 
@@ -748,6 +468,7 @@ function onWheelFirst(e) {
   }
 
   updateAll();
+ 
 }
 
 function onWheelSecond(e) {
@@ -799,7 +520,7 @@ function updateBreadcrumbs() {
     if (node && node.img) {
       $btn.append($("<img>").attr("src", node.img));
       var $img = $btn.find("img").css({width:"90px",height:"90px"});
-      $btn.css({background:node.SetBackground,color:node.ColorOfFont,borderRadius:"15px",fontSize:"25px",fontWeight:1000})
+      $btn.css({backgroundImage:node.SetBackground,color:node.ColorOfFont})
       if(node.Unlocked){
         $btn.css({opacity:1})
       }else{

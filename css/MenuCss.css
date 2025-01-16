@@ -6,6 +6,7 @@
     /* BREADCRUMBS */
     #breadcrumb-container {
       z-index: 500;
+      
       position: absolute;
       top: 10px;
       left: 10px;
@@ -13,17 +14,40 @@
       gap: 8px;
       z-index: 999;
     }
+    .circlebtnspan{
+       display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;    /* Vertical centering */
+    height: 100%;  
+      
+    }
     .breadcrumb-button {
       z-index: 500;
-      background: #fff;
+      background-image: #fff;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      font-weight: 1000;
+      font-size:25px;
+      border-radius: 50%;
       padding: 12px 20px;
+      
       cursor: pointer;
+      background-size: 166px; /* Ensures the image uses its original size */
+text-shadow: -5px -2px 1px black;
       display: inline-flex;
       align-items: center;
       min-width: 80px;
-      width:300px;
+      width:150px;
+      height:150px;
+      font-family: 'Orbitron', sans-serif;
+  background-repeat: repeat; /* This makes the image tile */
+
+
+
+   display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center;    /* Vertical centering */
+    
+  
     }
     .breadcrumb-button:hover {
       z-index: 500;
@@ -34,6 +58,9 @@
       width: 20px;
       height: 20px;
       margin-right: 5px;
+          position: absolute;
+    margin-bottom: -150px;
+    margin-left: 25px;
     }
 
     /* CIRCLES CONTAINER */
@@ -66,24 +93,29 @@
       overflow: visible;
     }
 
-    /* BUTTONS IN THE CIRCLES */
-    .circle-btn {
-      z-index: 500;
-        
-width:"250px";
-height:"100px";
-margin-left:20px;
-      position: absolute;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 6px 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      overflow:visable;
-      transition: background-color 0.3s;
-    }
+   .circle-btn {
+    z-index: 500;
+    font-family: 'Orbitron', sans-serif;
+    width: 250px;
+    height: 60px;
+    position: absolute;
+    background: #fff;
+    border: 3px solid #ccc;
+    font-weight: 1000;
+    font-size: 25px;
+    text-align: center;
+    border-radius: 20px;
+    cursor: pointer;
+    text-shadow: -5px -2px 1px black;
+    display: flex; /* Enables flexbox */
+    align-items: center; /* Vertically centers text */
+    justify-content: center; /* Horizontally centers text */
+    overflow: visible;
+    transition: background-color 0.3s;
+    background-repeat: repeat; /* This makes the image tile */
+    background-size: 68px; /* Ensures the image uses its original size */
+}
+
     .circle-btn:hover {
       z-index: 500;
       background-color: #eee;
@@ -93,7 +125,7 @@ margin-left:20px;
       width: 157px;
       height: 157px;
       position:absolute;
-      margin-left:-205px;
+      margin-left:-391px;
       margin-right: 8px;
     }
     .main-position {

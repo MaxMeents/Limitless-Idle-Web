@@ -1,10 +1,96 @@
+<!--
+function resizeCanvas() {
+function processStage(stageName) {
+function loadImages(callback) {
+function generateRandomItem(probabilities) {
+function ShowStageMineralsAndTiles(stageNameHere){
+function addMineralCount(extraClass, extraStyles, src, name) {
+function StageMineral() {
+function StageTile() {
+function AssignJsonForTileAndMineral(){
+function GetStageName(){
+function getRandomMineralType() {
+function makeNewChunk(baseX, baseY) {
+function drawTile(tile) {
+function startMineralAnimation(mineral) {
+function animateMinerals() {
+function easeOutQuad(t) {
+function shouldDrawThisTile(tile) {
+function setupInitialChunks(NumOfLayersAlreadyGenerated) {
+function removeTopTiles(howManyTiles) {
+function playSoundOnce(soundPath) {
+function moveChunksUp() {
+function animate() {
+function startAnimation() {
+function saveImagesArray() {
+function applyImagesArray(imagesArray) {
+function injectMineralToStage(menuData, TheStageName, mineralName, imgPath) {
+function toggleBackgroundSize() {
+function LoadStage(SetSize, SetStageName){
+function LoadStageWithMemory(){
+
+-->
 <!DOCTYPE html>
 <html>
 <head>
   <title>Tile Destroy Game (4 Quadrants × 64 Tiles = 256)</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/MenuCss.css" />
   <style>
 /* Style for the "View" div */
+.MineralCount {
+    z-index: 500;
+    display: flex;
+    flex-direction: column; /* Arrange children vertically */
+    align-items: center;    /* Center children horizontally */
+    gap: 10px;              /* Space between elements */
+    position: absolute;     /* Maintain absolute positioning */
+}
+
+.name-box {
+  
+    background:black;
+    background-image: url('img/Ui/blue star tile.png');
+      background-repeat: repeat; /* This makes the image tile */
+  background-size: 112px; /* Ensures the image uses its original size */
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    font-family: Arial, sans-serif;
+    top:-13px;
+    position:absolute;
+    text-align: center;
+    padding: 2px 8px;
+    text-shadow: -5px -2px 1px black;
+    border-radius: 30px;
+    width: 112px;
+}
+
+.number-box {
+    background-color: white;
+    color: black;
+    font-size: 14px;
+    font-weight: 1000;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    
+    height: 20px;       /* Fixed height */
+    line-height: 20px;  /* Vertically center the text */
+    padding:3px;
+    border-radius: 25px; /* Optional: Rounded corners */
+    position:absolute;
+    top:120px;
+    font-family: 'Orbitron', sans-serif;
+    width: 130px;        /* Fixed width */
+}
+
+.mineral-icon {
+    width: 120px;  /* Adjust size as needed */
+    height: 120px;
+}
+
+
     #viewDiv {
       z-index: 1;
       position: absolute;
@@ -26,7 +112,7 @@
       position: absolute;
       /* Gradient background */
       background: linear-gradient(to right, yellow, white);
-      background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+      background-image: url('img/TiledBackgrounds/blue sky.png'); /* Replace with the path to your image */
   background-repeat: repeat; /* This makes the image tile */
   background-size: 55px; /* Ensures the image uses its original size */
 			border:3px solid black;
@@ -55,7 +141,7 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
- background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+ background-image: url('img/TiledBackgrounds/blue sky.png'); /* Replace with the path to your image */
   background-repeat: repeat; /* This makes the image tile */
   background-size: auto; /* Ensures the image uses its original size */
     }
@@ -144,7 +230,7 @@
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
           <script src="js/MenuJs.js"></script>
 </head>
@@ -162,6 +248,8 @@
   
   <script>
 $(document).ready(function(){
+
+
     const canvas = $('.CanvasContainer')[0];
     const ctx = canvas.getContext("2d");
     $('.TileContainer').width($(window).width());
@@ -187,6 +275,42 @@ $(document).ready(function(){
   let TP = "img/High Qualikty Tiles/"
   let MP = "img/Minerals/256/"
   let MPBG = "img/Minerals/256 w bg/"
+  window.Dirt_1_Count = 0
+window.Dirt_2_Count = 0
+window.Dirt_3_Count = 0
+window.Dirt_4_Count = 0
+window.Dirt_5_Count = 0
+window.Ice_Count = 0
+window.Magma_Count = 0
+window.Metal_Count = 0
+window.Rock_Count = 0
+window.Snow_Count = 0
+window.Stone_1_Count = 0
+window.Water_Count = 0
+window.Wood_Count = 0
+window.Amethyst_Count = 0
+window.Carnelian_Count = 0
+window.Citrine_Count = 0
+window.Coal_Count = 0
+window.Copper_Count = 0
+window.Dragon_Egg_Count = 0
+window.Dragon_Tear_Count = 0
+window.Eclipseyes_Count = 0
+window.Emerald_Count = 0
+window.Gold_Count = 0
+window.Jade_Count = 0
+window.Lapis_Lazuli_Count = 0
+window.Peach_Stone_Count = 0
+window.Platnium_Count = 0
+window.Powder_Count = 0
+window.Rainbow_Stone_Count = 0
+window.Ruby_Count = 0
+window.Sapphire_Count = 0
+window.Silver_Count = 0
+window.Sunshine_Stone_Count = 0
+window.Sunstone_Count = 0
+window.Tanzanite_Count = 0
+window.Unicorn_Tear_Count = 0
     // Define tile types with their image sources
     const tileTypes = {
       
@@ -2616,6 +2740,7 @@ const LuminousDepthsTile = {
     "Ice": 0.3,
     "Rock": 0.1
 };
+
 function processStage(stageName) {
     stageNameWithSpace = stageName;
     stageName = stageName.replace(/ /g, '');
@@ -2692,7 +2817,7 @@ function processStage(stageName) {
     }
 
     // Adjusted values
-    window.WaitTimeForMoveChunksUp = 200;
+    window.WaitTimeForMoveChunksUp = 50;
     window.ContinueDestroying = true
     window.allChunks = [];
     window.size = 80;                  // The size of each tile in pixels
@@ -2706,7 +2831,15 @@ function processStage(stageName) {
     window.layerCount = 0
     window.Damage = 5
     window.life = 100
-    window.DestroyAtOnce = 1
+    window.DestroyAtOnce = 2
+    window.MaxDestroyAtOnce = SizeOfDiamond * 2
+    setInterval(function(){
+      window.DestroyAtOnce = 2
+      window.MaxDestroyAtOnce = SizeOfDiamond * 2
+    },100)
+    if(DestroyAtOnce > MaxDestroyAtOnce){
+      DestroyAtOnce = MaxDestroyAtOnce
+    }
     window.stagesInSequence = true
     
     AssignJsonForTileAndMineral()
@@ -2839,6 +2972,168 @@ processStage("Glimmering Crater")
 processStage("Radiant Cave")
 processStage("Shimmering Abyss")
 processStage("Luminous Depths")
+// Global variables
+let numberBoxUpdaterInterval = null;
+let tile_tilename_Count = {};
+function addMineralCount(extraClass, extraStyles, src, name) {
+    // Determine if it's a tile or mineral based on the className prefix
+    let countVariableName = '';
+    if (extraClass.startsWith('tile_')) {
+        countVariableName = extraClass.substring(5) + "_Count"; // Remove 'tile_' prefix
+    } else if (extraClass.startsWith('mineral_')) {
+        countVariableName = extraClass.substring(8) + "_Count"; // Remove 'mineral_' prefix
+    } else {
+        console.warn(`Unknown class prefix for ${extraClass}`);
+        return;
+    }
+
+    // Create the HTML structure with name-box above the image and number-box below
+    const mineralCountHTML = `
+        <div class="MineralCount ${extraClass}">
+            <div class="name-box">${name}</div>
+            <img src="${src}" alt="Mineral Icon" class="mineral-icon">
+            <div class="number-box">0</div>
+        </div>
+    `;
+
+    // Append the HTML to the body or another container
+    const $mineralCount = $(mineralCountHTML).appendTo('body');
+
+    // Apply extra styles
+    $mineralCount.css(extraStyles);
+
+    // Initialize the global count variable if it doesn't exist
+    if (typeof window[countVariableName] === 'undefined') {
+        window[countVariableName] = 0; // Set to initial count if needed
+    }
+}
+
+function ShowStageMineralsAndTiles(stageNameHere) {
+    // Update the current stage name
+    currentStageName = stageNameHere;
+
+    // Clear the existing interval if it exists
+    if (numberBoxUpdaterInterval !== null) {
+        clearInterval(numberBoxUpdaterInterval);
+        numberBoxUpdaterInterval = null;
+    }
+
+    // Optionally, remove existing MineralCount elements to refresh the display
+    $('.MineralCount').remove();
+
+    let c = 0;
+    const stage = stageData[stageNameHere];
+    const tiles = stage.tiles;
+
+    // Add Tiles
+    for (const [TileName, percentage] of Object.entries(tiles)) {
+        if (TileName !== "none") {
+            const nameFormatted = TileName.replace(/\s+/g, '_');
+            const className = "tile_" + nameFormatted;
+            addMineralCount(
+                className,
+                {
+                    zIndex: 499,
+                    bottom: "200px",
+                    right: `${40 + 110 * c}px`,
+                    position: "absolute"
+                },
+                `${TP}${TileName} 512.png`,
+                TileName // Pass the actual name
+            );
+            c++;
+        }
+    }
+
+    c = 0;
+    const minerals = stage.minerals;
+
+    // Add Minerals
+    for (const [mineralName, percentage] of Object.entries(minerals)) {
+        if (mineralName !== "none") {
+            const nameFormatted = mineralName.replace(/\s+/g, '_');
+            const className = "mineral_" + nameFormatted;
+            addMineralCount(
+                className,
+                {
+                    zIndex: 499,
+                    bottom: "30px",
+                    right: `${40 + 110 * c}px`,
+                    position: "absolute"
+                },
+                `${MPBG}Lots ${mineralName} 3.png`,
+                mineralName // Pass the actual name
+            );
+            c++;
+        }
+    }
+
+    // Start the new update interval (e.g., every 100ms)
+    numberBoxUpdaterInterval = setInterval(updateNumberBoxes, 100);
+}
+
+function updateNumberBoxes() {
+    if (!currentStageName) return; // Exit if no stage is set
+
+    const stage = stageData[currentStageName];
+    if (!stage) {
+        console.error(`Stage "${currentStageName}" not found.`);
+        return;
+    }
+
+    const tiles = stage.tiles;
+    const minerals = stage.minerals;
+
+    // Update Tiles
+    for (const TileName of Object.keys(tiles)) {
+        if (TileName !== "none") {
+            const nameFormatted = TileName.replace(/\s+/g, '_');
+            const className = `tile_${nameFormatted}`;
+            const tilename = nameFormatted; // Extract tilename without 'tile_' prefix
+            const countVariableName = `${tilename}_Count`;
+            const count = window[countVariableName] || 0;
+            const $numberBox = $(`.${className} .number-box`);
+            if ($numberBox.length) {
+                $numberBox.text(count);
+            } else {
+                console.warn(`Number box for "${className}" not found.`);
+            }
+        }
+    }
+
+    // Update Minerals
+    for (const mineralName of Object.keys(minerals)) {
+        if (mineralName !== "none") {
+            const nameFormatted = mineralName.replace(/\s+/g, '_');
+            const className = `mineral_${nameFormatted}`;
+            const mineralname = nameFormatted; // Extract mineralname without 'mineral_' prefix
+            const countVariableName = `${mineralname}_Count`;
+            const count = window[countVariableName] || 0;
+            const $numberBox = $(`.${className} .number-box`);
+            if ($numberBox.length) {
+                $numberBox.text(count);
+            } else {
+                console.warn(`Number box for "${className}" not found.`);
+            }
+        }
+    }
+}
+
+
+
+window.psn = "stringtoinit"
+setInterval(function(){
+sn = GetStageNameCurrent()
+
+if(sn != psn){
+psn = sn
+$(".MineralCount").remove()
+ShowStageMineralsAndTiles(GetStageNameCurrent())
+}
+},100)
+
+
+
 const CountJson = {
   "Few":0.2,
   "Some":0.2,
@@ -2850,7 +3145,7 @@ const CountJson = {
     function StageMineral() {
       let Mineral = generateRandomItem(stageData[GetStageName()].minerals);
       if(Mineral == "none"){
-        return "none"
+        return {Fullname:"none",ReducedName:"none",AmountType:"none"}
       }
       let CountMineral = generateRandomItem(CountJson);
    if (CountMineral == "Few") {
@@ -2869,9 +3164,7 @@ if (CountMineral == "One") {
     One = Math.floor(Math.random() * 9) + 1; // 1 to 9
 }
 
-      return CountMineral.replace(/ /g, '_') + "_" +
-       Mineral.replace(/ /g, '_') + "_" +
-       window[CountMineral].toString().replace(/ /g, '_');
+      return {Fullname:CountMineral.replace(/ /g, '_') + "_" + Mineral.replace(/ /g, '_') + "_" + window[CountMineral].toString().replace(/ /g, '_'),AmountType:CountMineral,ReducedName:Mineral.replace(/ /g, '_')}
 
     }
     
@@ -2888,6 +3181,17 @@ if (CountMineral == "One") {
       if(stagesInSequence == true){
       window.StageName = "DirtPatch"
       if(layerCount > 20){
+        window.StageName = "RockyDirt"
+      }
+      }else{
+        StageName = StageName //keep it from changing
+      }
+      return StageName
+    }
+    function GetStageNameCurrent(){
+      if(stagesInSequence == true){
+      window.StageName = "DirtPatch"
+      if(LayersRemoved > 20){
         window.StageName = "RockyDirt"
       }
       }else{
@@ -3010,11 +3314,13 @@ function makeNewChunk(baseX, baseY) {
                     const tileY = groupY + (row + col) * distY;
                     
                     const tileType = StageTile()
-                    let mineralType = StageMineral()
-                    if(mineralType == "none"){
-                      mineralType = null
+                    var mineralType = []
+                    var mineralType = StageMineral()
+                    if(mineralType.Fullname == "none"){
+                      mineralType.Fullname = null
                     }
-
+  //console.log(mineralType.Fullname)
+  //console.log(mineralType.ReducedName)
                     // Determine if the tile is on the perimeter
                     let isPerimeter = false;
                    
@@ -3078,7 +3384,9 @@ function makeNewChunk(baseX, baseY) {
                         life: life,
                         alive: true,
                         tileType: tileType,
-                        mineralType: mineralType
+                        mineralType: mineralType.Fullname,
+                        mineralName:mineralType.ReducedName,
+                        mineralAmountType:mineralType.AmountType
                     });
                 }
             }
@@ -3101,7 +3409,56 @@ function makeNewChunk(baseX, baseY) {
         ctx.drawImage(mineralImg, tile.x, tile.y, size, size);
       }
     }
+const animationDuration = 250; // Animation duration in milliseconds
+const finalYOffset = -90; // Move up by 50px
+const finalScale = 1.7; // Grow by 1.5 times
+window.animatingMinerals = []
+function drawTile(tile) {
+  const tileImg = tileTypes[tile.tileType].image;
+  ctx.drawImage(tileImg, tile.x, tile.y, size, size);
 
+  if (tile.mineralType) {
+    const mineralImg = mineralTypes[tile.mineralType].image;
+    ctx.drawImage(mineralImg, tile.x, tile.y, size, size);
+  }
+}
+function startMineralAnimation(mineral) {
+  window.animatingMinerals.push({
+    x: mineral.x,
+    y: mineral.y,
+    mineralType: mineral.mineralType,
+    startTime: performance.now(),
+  });
+
+  // Start the animation loop if it hasn't started already
+  if (window.animatingMinerals.length === 1) {
+    requestAnimationFrame(animateMinerals);
+  }
+}
+const targetFPS = 40; // Target frames per second
+const frameInterval = 1000 / targetFPS; // Time per frame in milliseconds
+let lastFrameTime = 0; // Timestamp of the last frame
+
+function animateMinerals() {
+  const currentTime = performance.now();
+  const timeSinceLastFrame = currentTime - lastFrameTime;
+
+  // Limit updates to the target FPS
+  if (timeSinceLastFrame < frameInterval) {
+    requestAnimationFrame(animateMinerals);
+    return;
+  }
+
+
+  if (window.animatingMinerals.length > 0) {
+    requestAnimationFrame(animateMinerals);
+  }
+}
+
+// Easing function for smooth animation
+function easeOutQuad(t) {
+  return t * (2 - t);
+}
     /**
      * Decide if a tile should be drawn, according to your “top two + perimeter” rule.
      * row=0 is top edge in that quadrant, row=7 is bottom edge; same for col=0..7.
@@ -3139,23 +3496,34 @@ let LifeRemaining = life
       if (allChunks.length === 0 || ContinueDestroying == false) return;
 
       let topChunk = allChunks[allChunks.length - 1];
-removeTimerMax = 5;
+removeTimerMax = 0;
       removeTimer++;
       
       if (removeTimer >= removeTimerMax) {
         let counter = 0;
         LifeRemaining -= Damage 
-
+        if(LifeRemaining <= 0){
         while (counter < howManyTiles) {
           let topChunk = allChunks[allChunks.length - 1];
           removeTimer = 0;
           LifeRemaining = topChunk[0].life * DestroyAtOnce
 
-          if (currentTileToDestroy >= 0) {
+          if (currentTileToDestroy >= 0 && ContinueDestroying) {
             if (topChunk[currentTileToDestroy]) {
-              for(i = SizeOfDiamond - 1;i >= currentTileToDestroy;i--){
-              topChunk[i].alive = false;
+              
+              topChunk[currentTileToDestroy].alive = false;
+              
+              console.log("mineralName:"+topChunk[currentTileToDestroy].mineralName)
+                console.log("mineralType:"+topChunk[currentTileToDestroy].mineralType)
+              if(topChunk[currentTileToDestroy].mineralType != null ){
+                
+                console.log(topChunk[currentTileToDestroy].mineralName.replace(/\s+/g, '_')+"_Count")
+                window[topChunk[currentTileToDestroy].mineralName.replace(/\s+/g, '_')+"_Count"] = window[topChunk[currentTileToDestroy].mineralName.replace(/\s+/g, '_')+"_Count"] + 1
+                startMineralAnimation(topChunk[currentTileToDestroy])
+                
               }
+                window[topChunk[currentTileToDestroy].tileType.replace(/\s+/g, '_')+"_Count"] = window[topChunk[currentTileToDestroy].tileType.replace(/\s+/g, '_')+"_Count"] + 1
+              
               
               //console.log(`Destroyed tile ${currentTileToDestroy} in chunk ${allChunks.length - 1}`);
               currentTileToDestroy--;
@@ -3174,6 +3542,7 @@ removeTimerMax = 5;
             }
           }
           counter++;
+        }
         }
       }
     }
@@ -3235,42 +3604,74 @@ function playSoundOnce(soundPath) {
     });
 let pSize = size;
     // Main loop
- const fps = 10; // Target frame rate
-const interval = 1000 / fps; // Interval in milliseconds
+ window.fps = 20; //fps is set onWheelFirst on MenuJs.js to 30
+ 
+window.interval = 1000 / fps; // Interval in milliseconds
 let lastTime = 0; // Track the last frame time
+setInterval(function(){
+  removeTopTiles(DestroyAtOnce);
+},5)
+async function animate() {
+    while (true) {
+        const currentTime = performance.now();
+        const interval = 1000 / fps; // Interval in milliseconds
 
-function animate(currentTime) {
-    // Calculate the time elapsed since the last frame
-    if (currentTime - lastTime >= interval || RenderBecauseOfNewLoad) {
-        lastTime = currentTime;
+        // Calculate the time elapsed since the last frame
+        if (currentTime - lastTime >= interval || RenderBecauseOfNewLoad) {
+            lastTime = currentTime;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Destroy a bunch of tiles from the top chunk
-        removeTopTiles(DestroyAtOnce);
+            // Destroy a bunch of tiles from the top chunk
 
-        // Reset chunk count and draw only the tiles that qualify
-        RenderBecauseOfNewLoad = false;
-        chunkcount = 0;
-        for (let chunk of allChunks) {
-            chunkcount++;
-            for (let tile of chunk) {
-                if (!tile.alive) {
-                    // Do nothing if the tile is not alive
-                } else if (shouldDrawThisTile(tile)) {
-                    drawTile(tile);
-                } else if (chunkcount > allChunks.length - 3) {
-                    drawTile(tile);
+            // Reset chunk count and draw only the tiles that qualify
+            RenderBecauseOfNewLoad = false;
+            chunkcount = 0;
+            for (let chunk of allChunks) {
+                chunkcount++;
+                for (let tile of chunk) {
+                    if (!tile.alive) {
+                        // Do nothing if the tile is not alive
+                    } else if (shouldDrawThisTile(tile)) {
+                        drawTile(tile);
+                    } else if (chunkcount > allChunks.length - 3) {
+                        drawTile(tile);
+                    }
                 }
             }
+            JustMoved = false;
         }
-        JustMoved = false;
+
+        lastFrameTime = currentTime; // Update the last frame time
+
+        // Animate minerals
+        window.animatingMinerals = window.animatingMinerals.filter((anim) => {
+            const elapsed = currentTime - anim.startTime;
+            if (elapsed > animationDuration) return false;
+
+            const progress = elapsed / animationDuration;
+            const easedProgress = easeOutQuad(progress);
+
+            const yOffset = finalYOffset * easedProgress;
+            const scale = 1 + (finalScale - 1) * easedProgress;
+
+            const mineralImg = mineralTypes[anim.mineralType].image;
+            const newSize = size * scale;
+            ctx.drawImage(
+                mineralImg,
+                anim.x + (size - newSize) / 2,
+                anim.y + yOffset + (size - newSize) / 2,
+                newSize,
+                newSize
+            );
+
+            return true;
+        });
+
+        // Wait 25ms before the next iteration
+        await new Promise(resolve => setTimeout(resolve, 50));
     }
-
-    // Request the next frame
-    requestAnimationFrame(animate);
 }
-
     // Start up
     function startAnimation() {
       document.getElementById('loading').style.display = 'none';
@@ -3290,6 +3691,8 @@ function saveImagesArray() {
     chunk.map(tile => ({
       tileType: tile.tileType,
       mineralType: tile.mineralType,
+      mineralName:tile.mineralName,
+      mineralAmountType:tile.mineralAmountType,
       alive: tile.alive
     }))
   );
@@ -3320,6 +3723,8 @@ function applyImagesArray(imagesArray) {
 
       tile.tileType = imagesArray[savedIndex][tileIndex].tileType;
       tile.mineralType = imagesArray[savedIndex][tileIndex].mineralType;
+      tile.mineralAmountType = imagesArray[savedIndex][tileIndex].mineralAmountType;
+      tile.mineralName = imagesArray[savedIndex][tileIndex].mineralName;
       tile.alive = imagesArray[savedIndex][tileIndex].alive;
     });
   }
@@ -3386,6 +3791,7 @@ $(document).on('wheel mousewheel', function (event) {
     if ($('.breadcrumb-button').is(":visible")) {
         return;
     }
+    
     var delta;
 
     // Normalize delta for cross-browser support
@@ -3443,7 +3849,14 @@ $(document).on('wheel mousewheel', function (event) {
         console.log(size);
     }
 });
-
+setTimeout(function(){
+  imagesArray = saveImagesArray();
+        NumOfLayers = $('.TileContainer').height() / size * 2;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        JustMoved = true;
+        setupInitialChunks(1);
+        applyImagesArray(imagesArray);
+},1000)
 $(document).ready(function() {
     // Create the "View" div
     $('body').append('<div id="viewDiv">View</div>');
