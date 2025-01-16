@@ -1,4 +1,21 @@
-
+/*
+function createCircularButton(x, y) {
+function injectStageToMining(menuData, stageName) {
+function findNode(label, data) {
+function getChildrenArray(label) {
+function wrapIndex(i, len) {
+function initStack() {
+function ensureSecondCircle() {
+function drawHalfCircle($container, circleData) {
+function onWheelFirst(e) {
+function onWheelSecond(e) {
+function promoteSecondCircleItem(index) {
+function updateBreadcrumbs() {
+function drawCircles() {
+function updateAll() {
+function updateBlueArrowVisibility() {
+function addBlueArrow(x, y) {
+*/
 $(document).ready(function() {
 
 function createCircularButton(x, y) {

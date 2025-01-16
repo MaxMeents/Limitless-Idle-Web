@@ -143,7 +143,7 @@ function LoadStageWithMemory(){
       overflow: hidden;
  background-image: url('img/TiledBackgrounds/blue sky.png'); /* Replace with the path to your image */
   background-repeat: repeat; /* This makes the image tile */
-  background-size: auto; /* Ensures the image uses its original size */
+  background-size: 155px; /* Ensures the image uses its original size */
     }
     #loading {
       z-index: 1;
@@ -165,7 +165,7 @@ function LoadStageWithMemory(){
         .Layer {
           z-index: 1;
             background: linear-gradient(to bottom, #e0c097, #000000);
-              background-image: url('img/TiledBackgrounds/blue\ sky.png'); /* Replace with the path to your image */
+              background-image: url('img/TiledBackgrounds/blue sky.png'); /* Replace with the path to your image */
   background-repeat: repeat; /* This makes the image tile */
   background-size: 155px; /* Ensures the image uses its original size */
             color: white;
@@ -179,6 +179,18 @@ function LoadStageWithMemory(){
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.9);
             top:15px;
         }
+#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url('img/TiledBackgrounds/blue sky.png');
+  background-repeat: repeat;
+  background-size: 155px;
+  transition: background-size 160000ms ease-in-out;
+}
 
         .Layer:before, .Layer:after {
           z-index: 1;
@@ -235,7 +247,7 @@ function LoadStageWithMemory(){
           <script src="js/MenuJs.js"></script>
 </head>
 <body>
-
+<div id="background"></div>
 <div id="breadcrumb-container"></div>
 
 <div id="circles">
@@ -275,6 +287,8 @@ $(document).ready(function(){
   let TP = "img/High Qualikty Tiles/"
   let MP = "img/Minerals/256/"
   let MPBG = "img/Minerals/256 w bg/"
+  window.Amber_Count = 0
+  window.Grass_Count = 0
   window.Dirt_1_Count = 0
 window.Dirt_2_Count = 0
 window.Dirt_3_Count = 0
@@ -312,8 +326,36 @@ window.Sunstone_Count = 0
 window.Tanzanite_Count = 0
 window.Unicorn_Tear_Count = 0
     // Define tile types with their image sources
-    const tileTypes = {
-      
+    window.tileTypes = {
+    Grass: {
+        image: new Image(),
+        src: TP + "Grass 512.png"
+    },  
+    Grass_1: {
+        image: new Image(),
+        src: TP + "Grass 512.png"
+    },  
+    Grass_2: {
+    image: new Image(),
+    src: TP + "Grass 2 512.png"
+},
+Grass_3: {
+    image: new Image(),
+    src: TP + "Grass 3 512.png"
+},
+Grass_4: {
+    image: new Image(),
+    src: TP + "Grass 4 512.png"
+},
+Grass_5: {
+    image: new Image(),
+    src: TP + "Grass 5 512.png"
+},
+Grass_6: {
+    image: new Image(),
+    src: TP + "Grass 6 512.png"
+},
+
     Dirt_1: {
         image: new Image(),
         src: TP + "Dirt 1 512.png"
@@ -342,6 +384,23 @@ window.Unicorn_Tear_Count = 0
         image: new Image(),
         src: TP + "Magma 512.png"
     },
+    Magma_1: {
+    image: new Image(),
+    src: TP + "Magma 512.png"
+},
+Magma_2: {
+    image: new Image(),
+    src: TP + "Magma 2 512.png"
+},
+Magma_3: {
+    image: new Image(),
+    src: TP + "Magma 3 512.png"
+},
+Magma_4: {
+    image: new Image(),
+    src: TP + "Magma 4 512.png"
+},
+
     Metal: {
         image: new Image(),
         src: TP + "Metal 512.png"
@@ -365,12 +424,21 @@ window.Unicorn_Tear_Count = 0
     Wood: {
         image: new Image(),
         src: TP + "Wood 512.png"
+    },
+    Amber: {
+        image: new Image(),
+        src: TP + "Amber 1 512.png"
     }
-
 
       // If you add more tile types, do so here
     };
 
+for (let i = 1; i <= 66; i++) {
+    window.tileTypes[`Amber_${i}`] = {
+        image: new Image(),
+        src: TP + `Amber ${i} 512.png`
+    };
+}
     // Define mineral types with their image sources
     const mineralTypes = {
      Few_Amethyst_1: {
@@ -2566,6 +2634,22 @@ const LuminousDepths = {
     "Ruby": 0.4,
     "Emerald": 0.1
 };
+const TopLayer = {
+    "none": 1,
+    
+};
+const TopLayerTile = {
+    "Grass": 1,
+    
+};
+const AmberLayer = {
+    "none": 1,
+    
+};
+const AmberLayerTile = {
+    "Amber": 1,
+    
+};
 const DirtPatchTile = {
     "Dirt 1": 0.7,
     "Dirt 2": 0.3
@@ -2583,9 +2667,9 @@ const FrozenSoilTile = {
 };
 
 const MagmaVeinTile = {
-    "Dirt 5": 0.4,
-    "Magma": 0.4,
-    "Rock": 0.2
+    //"Dirt 5": 0.4,
+    "Magma": 1,
+    //"Rock": 0.2
 };
 
 const MetalOreFieldTile = {
@@ -2821,7 +2905,7 @@ function processStage(stageName) {
     window.ContinueDestroying = true
     window.allChunks = [];
     window.size = 80;                  // The size of each tile in pixels
-    window.SizeOfDiamond = 256
+    window.SizeOfDiamond = 64
     window.currentTileToDestroy = SizeOfDiamond - 1; // Because each chunk has 256 tiles
     window.shouldMove = false;
     window.removeTimer = 0;
@@ -2829,12 +2913,12 @@ function processStage(stageName) {
     window.NumOfLayers = $('.TileContainer').height()/size * 2 
     window.TilesDestroyed = 0
     window.layerCount = 0
-    window.Damage = 5
-    window.life = 100
-    window.DestroyAtOnce = 2
+    window.Damage = 500
+    window.life = 1
+    window.DestroyAtOnce = 1
     window.MaxDestroyAtOnce = SizeOfDiamond * 2
     setInterval(function(){
-      window.DestroyAtOnce = 2
+      window.DestroyAtOnce = 1
       window.MaxDestroyAtOnce = SizeOfDiamond * 2
     },100)
     if(DestroyAtOnce > MaxDestroyAtOnce){
@@ -2878,6 +2962,8 @@ function processStage(stageName) {
     return null; // Fallback (shouldn't reach here)
 }
 const stageData = {
+  TopLayer: { minerals: TopLayer, tiles: TopLayerTile },
+  AmberLayer: { minerals: AmberLayer, tiles: AmberLayerTile },
   DirtPatch: { minerals: DirtPatch, tiles: DirtPatchTile },
   RockyDirt: { minerals: RockyDirt, tiles: RockyDirtTile },
   FrozenSoil: { minerals: FrozenSoil, tiles: FrozenSoilTile },
@@ -3124,7 +3210,7 @@ function updateNumberBoxes() {
 window.psn = "stringtoinit"
 setInterval(function(){
 sn = GetStageNameCurrent()
-
+console.log(sn)
 if(sn != psn){
 psn = sn
 $(".MineralCount").remove()
@@ -3147,6 +3233,7 @@ const CountJson = {
       if(Mineral == "none"){
         return {Fullname:"none",ReducedName:"none",AmountType:"none"}
       }
+
       let CountMineral = generateRandomItem(CountJson);
    if (CountMineral == "Few") {
     Few = Math.floor(Math.random() * 3) + 1; // 1 to 3
@@ -3170,8 +3257,20 @@ if (CountMineral == "One") {
     
     function StageTile() {
       let Tile = generateRandomItem(stageData[GetStageName()].tiles).replace(/ /g, '_');;
-      
-      return Tile
+      Tile_FullName = Tile
+            if (Tile == "Grass") {
+    let randomNumber = Math.floor(Math.random() * 6) + 1; // Random number between 2 and 7
+    Tile_FullName = `Grass_${randomNumber}`;
+}
+           if (Tile == "Amber") {
+    let randomNumber = Math.floor(Math.random() * 66) + 1; // Random number between 2 and 7
+    Tile_FullName = `Amber_${randomNumber}`;
+}
+if (Tile == "Magma") {
+    let randomNumber = Math.floor(Math.random() * 4) + 1; // Random number between 2 and 7
+    Tile_FullName = `Magma_${randomNumber}`;
+}
+      return {TileReducedName:Tile,Tile_FullName:Tile_FullName}
     }
     function AssignJsonForTileAndMineral(){
       
@@ -3180,7 +3279,12 @@ if (CountMineral == "One") {
     function GetStageName(){
       if(stagesInSequence == true){
       window.StageName = "DirtPatch"
-      if(layerCount > 20){
+      if(layerCount == 1){
+        window.StageName = "TopLayer"
+      }
+      if(layerCount == 2||layerCount == 15||layerCount == 25||layerCount == 40){
+        window.StageName = "AmberLayer"
+      }else if(layerCount > 20){
         window.StageName = "RockyDirt"
       }
       }else{
@@ -3190,8 +3294,14 @@ if (CountMineral == "One") {
     }
     function GetStageNameCurrent(){
       if(stagesInSequence == true){
+       
       window.StageName = "DirtPatch"
-      if(LayersRemoved > 20){
+        if(LayersRemoved == 0){
+        window.StageName = "TopLayer"
+      }
+      if(LayersRemoved == 2-1||LayersRemoved == 15-1||LayersRemoved == 25-1||LayersRemoved == 40-1){
+        window.StageName = "AmberLayer"
+      }else if(LayersRemoved > 20){
         window.StageName = "RockyDirt"
       }
       }else{
@@ -3383,7 +3493,8 @@ function makeNewChunk(baseX, baseY) {
                         show: isPerimeter, 
                         life: life,
                         alive: true,
-                        tileType: tileType,
+                        tileType: tileType.Tile_FullName,
+                        tileTypeReducedName:tileType.TileReducedName,
                         mineralType: mineralType.Fullname,
                         mineralName:mineralType.ReducedName,
                         mineralAmountType:mineralType.AmountType
@@ -3409,7 +3520,7 @@ function makeNewChunk(baseX, baseY) {
         ctx.drawImage(mineralImg, tile.x, tile.y, size, size);
       }
     }
-const animationDuration = 250; // Animation duration in milliseconds
+const animationDuration = 450; // Animation duration in milliseconds
 const finalYOffset = -90; // Move up by 50px
 const finalScale = 1.7; // Grow by 1.5 times
 window.animatingMinerals = []
@@ -3426,6 +3537,7 @@ function startMineralAnimation(mineral) {
   window.animatingMinerals.push({
     x: mineral.x,
     y: mineral.y,
+    mineralAmountType:mineral.mineralAmountType,
     mineralType: mineral.mineralType,
     startTime: performance.now(),
   });
@@ -3472,10 +3584,10 @@ if(tile.show) return true
     }
 
     // Prepare the initial set of chunks
-    function setupInitialChunks(NumOfLayersAlreadyGenerated) {
+    function setupInitialChunks(NumOfLayersAlreadyGenerated,IncreaseLayerCount = false) {
       allChunks = [];
       window.RenderBecauseOfNewLoad = true
-      let layerCount = 0
+      window.layerCount = LayersRemoved
       // 16 chunks “stacked” (you had 32 in your original, adjust as needed)
       for (let i = NumOfLayersAlreadyGenerated; i < NumOfLayers; i++) {
         
@@ -3522,7 +3634,7 @@ removeTimerMax = 0;
                 startMineralAnimation(topChunk[currentTileToDestroy])
                 
               }
-                window[topChunk[currentTileToDestroy].tileType.replace(/\s+/g, '_')+"_Count"] = window[topChunk[currentTileToDestroy].tileType.replace(/\s+/g, '_')+"_Count"] + 1
+                window[topChunk[currentTileToDestroy].tileTypeReducedName.replace(/\s+/g, '_')+"_Count"] = window[topChunk[currentTileToDestroy].tileTypeReducedName.replace(/\s+/g, '_')+"_Count"] + 1
               
               
               //console.log(`Destroyed tile ${currentTileToDestroy} in chunk ${allChunks.length - 1}`);
@@ -3645,28 +3757,51 @@ async function animate() {
         lastFrameTime = currentTime; // Update the last frame time
 
         // Animate minerals
-        window.animatingMinerals = window.animatingMinerals.filter((anim) => {
-            const elapsed = currentTime - anim.startTime;
-            if (elapsed > animationDuration) return false;
+      window.animatingMinerals = window.animatingMinerals.filter((anim) => {
+    const elapsed = currentTime - anim.startTime;
+    if (elapsed > animationDuration) return false;
 
-            const progress = elapsed / animationDuration;
-            const easedProgress = easeOutQuad(progress);
+    const progress = elapsed / animationDuration;
+    const easedProgress = easeOutQuad(progress);
 
-            const yOffset = finalYOffset * easedProgress;
-            const scale = 1 + (finalScale - 1) * easedProgress;
+    const yOffset = finalYOffset * easedProgress;
+    const scale = 1 + (finalScale - 1) * easedProgress;
 
-            const mineralImg = mineralTypes[anim.mineralType].image;
-            const newSize = size * scale;
-            ctx.drawImage(
-                mineralImg,
-                anim.x + (size - newSize) / 2,
-                anim.y + yOffset + (size - newSize) / 2,
-                newSize,
-                newSize
-            );
+    const mineralImg = mineralTypes[anim.mineralType].image;
+    const newSize = size * scale;
+    ctx.drawImage(
+        mineralImg,
+        anim.x + (size - newSize) / 2,
+        anim.y + yOffset + (size - newSize) / 2,
+        newSize,
+        newSize
+    );
 
-            return true;
-        });
+    // Animate the text based on mineralAmountType
+    const amountText = {
+        "One": "+1",
+        "Few": "+3",
+        "Some": "+7",
+        "Lots": "+15",
+        "Tons": "+25"
+    }[anim.mineralAmountType];
+
+    if (amountText) {
+        const textOpacity = 1 - progress; // Fade out over time
+        const textSize = 14 + (20 * easedProgress); // Start small, grow slightly
+
+        ctx.font = `${textSize}px Orbitron`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${textOpacity})`;
+        ctx.textAlign = "center";
+        ctx.fillText(
+            amountText,
+            anim.x + size / 2, // Center the text horizontally above the mineral
+            anim.y + yOffset - 10 // Position text slightly above the mineral
+        );
+    }
+
+    return true;
+});
 
         // Wait 25ms before the next iteration
         await new Promise(resolve => setTimeout(resolve, 50));
@@ -3693,6 +3828,7 @@ function saveImagesArray() {
       mineralType: tile.mineralType,
       mineralName:tile.mineralName,
       mineralAmountType:tile.mineralAmountType,
+      tileTypeReducedName:tile.tileTypeReducedName,
       alive: tile.alive
     }))
   );
@@ -3724,6 +3860,7 @@ function applyImagesArray(imagesArray) {
       tile.tileType = imagesArray[savedIndex][tileIndex].tileType;
       tile.mineralType = imagesArray[savedIndex][tileIndex].mineralType;
       tile.mineralAmountType = imagesArray[savedIndex][tileIndex].mineralAmountType;
+      tile.tileTypeReducedName = imagesArray[savedIndex][tileIndex].tileTypeReducedName;
       tile.mineralName = imagesArray[savedIndex][tileIndex].mineralName;
       tile.alive = imagesArray[savedIndex][tileIndex].alive;
     });
@@ -4037,7 +4174,7 @@ let buttonActions = [
     }
   });
   
-(function($) {
+
   $.fn.animateBackgroundSize = function(scaleMin, scaleMax, duration) {
     return this.each(function() {
       let $element = $(this);
@@ -4061,10 +4198,9 @@ let buttonActions = [
       setTimeout(toggleBackgroundSize, 0); // Start immediately
     });
   };
-  $('body').animateBackgroundSize(25,90,160000)
-  $('.Layer').animateBackgroundSize(25,90,160000)
   
-})(jQuery);
+  $('.Layer').animateBackgroundSize(25,90,160000)
+  $('#background').animateBackgroundSize(25,90,160000)
 
 
 setInterval(function(){
@@ -4113,3 +4249,4 @@ if (validOptions[FourthOption]) {
   </script>
 </body>
 </html>
+
