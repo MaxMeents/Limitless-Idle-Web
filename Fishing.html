@@ -7,125 +7,125 @@
     <!-- Load Orbitron Font -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-   body {
-        margin: 0;
-        overflow: hidden;
-        background-color: rgba(0, 0, 0, 0); /* Transparent background */
-    }
-    .Ocean {
-        background-image: url('img/Ui/waves.png');
-        background-repeat: repeat;
-        background-size: 900px;
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        z-index: 1;
-        transition: background-size 0.3s ease; /* Smooth transition */
-        animation: infinite-shift-left 5000s linear;
-    }
-    @keyframes infinite-shift-left {
-        0% {
-            background-position: 200000px;
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0); /* Transparent background */
         }
-        100% {
-            background-position: 0;
+        .Ocean {
+            background-image: url('img/Ui/waves.png');
+            background-repeat: repeat;
+            background-size: 900px;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: 1;
+            transition: background-size 0.3s ease; /* Smooth transition */
+            animation: infinite-shift-left 5000s linear;
         }
-    }
-    canvas {
-        position: absolute;
-        display: block;
-        z-index: 10;
-        background-color: rgba(0, 0, 0, 0); /* Transparent canvas */
-    }
-    /* Info Panel for Counters and Timers */
-    #infoPanel {
-          position: absolute;
-    top: -30px;
-    left: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 0px 20px;
-    border-radius: 10px;
-    font-family: 'Orbitron', sans-serif;
-    color: #000;
-    z-index: 20;
-    width: 250px;
-    height: 45vh;
-    overflow-y: auto;
-    padding-top: 5px;;
-scale: .8;
-    }
-    #infoPanel h2 {
-        margin: 0 0 10px 0; /* Reduced bottom margin */
-        font-size: 20px; /* Reduced font size from 28px */
-        text-align: center;
-        border-bottom: 2px solid #000;
-        padding-bottom: 4px; /* Reduced padding */
-    }
-    .counter, .timer, .scale-indicator {
-        margin-bottom: 10px; /* Reduced margin from 15px */
-        font-size: 18px; /* Reduced font size from 22px */
-    }
-    .counter span, .timer span, .scale-indicator span {
-        font-weight: bold;
-    }
-    /* Combo Display Styles */
-    #comboDisplay {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 90px;
-        color: orange;
-        font-weight: 900; /* Make text thick */
-        text-shadow: 2px 2px 4px white; /* Add white text shadow */
-        z-index: 20;
-    }
-    /* Zoom Controls Styles */
-    #zoomControls {
-        position: absolute;
-        top: 20px;
-        right: 20px; /* Changed from left to right */
-        background: rgba(0, 0, 0, 0.6);
-        padding: 20px;
-        border-radius: 15px;
-        font-family: 'Orbitron', sans-serif;
-        color: #00ffff; /* Neon Blue */
-        z-index: 20;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    #zoomControls h2 {
-        margin-bottom: 15px;
-        font-size: 24px;
-        color: #00ffff;
-        text-shadow: 2px 2px 4px #000;
-    }
-    .zoom-button {
-        width: 60px;
-        height: 60px;
-        margin: 5px 0;
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 24px;
-        font-weight: bold;
-        color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-    .zoom-button:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.5);
-    }
-    .zoom-button:active {
-        transform: scale(0.95);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+        @keyframes infinite-shift-left {
+            0% {
+                background-position: 200000px;
+            }
+            100% {
+                background-position: 0;
+            }
+        }
+        canvas {
+            position: absolute;
+            display: block;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0); /* Transparent canvas */
+        }
+        /* Info Panel for Counters and Timers */
+        #infoPanel {
+            position: absolute;
+            top: -30px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 0px 20px;
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            color: #000;
+            z-index: 20;
+            width: 250px;
+            height: 45vh;
+            overflow-y: auto;
+            padding-top: 5px;;
+            scale: .8;
+        }
+        #infoPanel h2 {
+            margin: 0 0 10px 0; /* Reduced bottom margin */
+            font-size: 20px; /* Reduced font size from 28px */
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 4px; /* Reduced padding */
+        }
+        .counter, .timer, .scale-indicator {
+            margin-bottom: 10px; /* Reduced margin from 15px */
+            font-size: 18px; /* Reduced font size from 22px */
+        }
+        .counter span, .timer span, .scale-indicator span {
+            font-weight: bold;
+        }
+        /* Combo Display Styles */
+        #comboDisplay {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 90px;
+            color: orange;
+            font-weight: 900; /* Make text thick */
+            text-shadow: 2px 2px 4px white; /* Add white text shadow */
+            z-index: 20;
+        }
+        /* Zoom Controls Styles */
+        #zoomControls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff; /* Neon Blue */
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #zoomControls h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #00ffff;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .zoom-button {
+            width: 60px;
+            height: 60px;
+            margin: 5px 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .zoom-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.5);
+        }
+        .zoom-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -165,6 +165,25 @@ scale: .8;
     <div id="comboDisplay">Combo: 0x</div>
 
     <script>
+        // ================================
+        //  1. WEIGHT-BASED SCALE FUNCTION
+        // ================================
+        const MIN_WEIGHT = 2;    // Smallest possible
+        const MAX_WEIGHT = 2500;  // Largest possible
+        const MIN_FACTOR = 1;    // Scale = 1× at min weight
+        const MAX_FACTOR = 9;   // Scale = 20× at max weight
+
+        function getWeightScaleFactor(weight) {
+            // Clamp weight between MIN_WEIGHT and MAX_WEIGHT
+            const clampedWeight = Math.max(MIN_WEIGHT, Math.min(MAX_WEIGHT, weight));
+            // Linear interpolation between 1 and 20
+            return MIN_FACTOR + (
+                (clampedWeight - MIN_WEIGHT) *
+                (MAX_FACTOR - MIN_FACTOR) /
+                (MAX_WEIGHT - MIN_WEIGHT)
+            );
+        }
+
         // Object to store different fish types
         const fishTypes = {};
         const FP = "img/Fish/"; // Path to fish images
@@ -231,17 +250,16 @@ scale: .8;
             // Constants for animation
             const baseSize = 25; // Base size for fish
             const growthFactor = 1.002; // Growth rate per frame to prevent excessive size
-            const maxSize = 50; // Maximum size limit for fish
 
             // Variables for scaling
             let backgroundScale = 1; // Initial background scale
-            let sizeScale = 1.0;      // Initial size scale
+            let sizeScale = 1.0;     // Initial size scale
 
-            // Limits for scaling
+            // Limits for scaling (used if you clamp or set boundaries)
             const minBackgroundScale = 0.4;
             const maxBackgroundScale = 3;
             const minSizeScale = 0.5;
-            const maxSizeScale = 3.0; // Adjusted to prevent excessively small fish
+            const maxSizeScale = 3.0;
 
             // Fish caught timestamps for counters
             const caughtTimestamps = [];
@@ -252,12 +270,12 @@ scale: .8;
 
             // Define predefined zoom levels (1 to 7)
             const zoomLevels = {
-                1: { backgroundScale: 2.5, sizeScale: 7.0, spawnInterval: 800, maxFish: 50 },
-                2: { backgroundScale: 2.0, sizeScale: 5.5, spawnInterval: 700, maxFish: 100 },
-                3: { backgroundScale: 1.5, sizeScale: 4.0, spawnInterval: 600, maxFish: 150 },
-                4: { backgroundScale: 1.0, sizeScale: 3.0, spawnInterval: 400, maxFish: 200 },
-                5: { backgroundScale: 0.7, sizeScale: 2.5, spawnInterval: 300, maxFish: 300 },
-                6: { backgroundScale: 0.5, sizeScale: 1.5, spawnInterval: 100, maxFish: 400 },
+                1: { backgroundScale: 2.5, sizeScale: 4.0, spawnInterval: 800, maxFish: 50 },
+                2: { backgroundScale: 2.0, sizeScale: 3.5, spawnInterval: 700, maxFish: 100 },
+                3: { backgroundScale: 1.5, sizeScale: 2.0, spawnInterval: 600, maxFish: 150 },
+                4: { backgroundScale: 1.0, sizeScale: 1.6, spawnInterval: 400, maxFish: 200 },
+                5: { backgroundScale: 0.7, sizeScale: 1.3, spawnInterval: 300, maxFish: 300 },
+                6: { backgroundScale: 0.5, sizeScale: 1, spawnInterval: 100, maxFish: 400 },
                 7: { backgroundScale: 0.2, sizeScale: 0.8, spawnInterval: 50, maxFish: 600 }
             };
 
@@ -276,24 +294,31 @@ scale: .8;
             // Initialize spawn interval based on default zoom level
             setSpawnInterval(zoomLevels[currentZoomLevel].spawnInterval);
 
-            // Function to spawn a new fish
+            // ===================
+            //  2. SPAWN NEW FISH
+            // ===================
             function spawnFish() {
                 if (activeFish.length >= zoomLevels[currentZoomLevel].maxFish) return; // Limit fish count
 
                 const fish = getRandomFish();
                 const startX = Math.random() * canvas.width;
                 const startY = Math.random() * canvas.height;
-                const individualScale = Math.random() * 0.5 + 0.75; // Scale between 0.75 and 1.25
-                const size = baseSize * sizeScale * individualScale; // Calculate size based on base size and current scale
                 const endY = startY - 200; // Target Y position
 
                 // Randomly decide if the fish should be flipped horizontally (50% chance)
                 const flipped = Math.random() < 0.5;
 
-                // Assign weight based on sizeScale with the specified probability distribution
+                // 2A. Assign a random weight based on your distribution
                 const weight = assignWeight();
 
-                // Add new fish with initial properties and phases
+                // 2B. Compute the weight-based scale factor (1–20)
+                const weightFactor = getWeightScaleFactor(weight);
+
+                // 2C. Combine the base size, zoom-based scale, random variation, and weight factor
+                const individualScale = Math.random() * 0.5 + 0.75; // Scale between 0.75 and 1.25
+                const size = baseSize * sizeScale * individualScale * weightFactor; 
+
+                // Add new fish with initial properties
                 activeFish.push({
                     fish,
                     x: startX,
@@ -302,14 +327,14 @@ scale: .8;
                     endY,
                     rotation: 0,            // Current rotation in degrees
                     alpha: 1,               // Opacity
-                    phase: 'rotating',      // Current phase: 'rotating', 'rising', 'fading'
-                    targetRotation: 90,     // Degrees to rotate
-                    rotationSpeed: 4,       // Degrees per frame
-                    extraRiseLeft: 50,      // Extra pixels to rise after rotation
-                    extraRiseSpeed: 2,      // Pixels per frame during extra rise
-                    flipped,                // Whether the fish is flipped horizontally
-                    weight,                 // Weight in pounds
-                    individualScale         // Individual scale factor
+                    phase: 'rotating',      // 'rotating' -> 'rising' -> 'fading'
+                    targetRotation: 90,     
+                    rotationSpeed: 4,
+                    extraRiseLeft: 50,      
+                    extraRiseSpeed: 2,      
+                    flipped,
+                    weight,
+                    individualScale
                 });
             }
 
@@ -320,12 +345,16 @@ scale: .8;
                     return Math.floor(Math.random() * 49) + 2; // 2-50 lbs
                 } else if (rand < 0.8) { // Next 10%
                     return Math.floor(Math.random() * 51) + 50; // 50-100 lbs
-                } else { // Remaining 20%
+                } else if (rand < 0.9) { // Next 10%
                     return Math.floor(Math.random() * 401) + 100; // 100-500 lbs
+                } else if (rand < 0.95) { // Next 10%
+                    return Math.floor(Math.random() * 2401) + 100; // 500-2500 lbs
                 }
             }
 
-            // Function to draw and update all active and caught fish
+            // ===========================
+            //  3. ANIMATION LOOP (DRAW)
+            // ===========================
             function drawFish() {
                 // Clear the entire canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -337,11 +366,9 @@ scale: .8;
                     // Handle behavior based on current phase
                     if (fishObj.phase === 'rotating') {
                         // **Rotating Phase**
-                        // Determine rotation direction based on flip
                         const rotationDirection = fishObj.flipped ? -fishObj.rotationSpeed : fishObj.rotationSpeed;
                         fishObj.rotation += rotationDirection;
 
-                        // Clamp rotation to targetRotation
                         if (Math.abs(fishObj.rotation) >= fishObj.targetRotation) {
                             fishObj.rotation = fishObj.flipped ? -fishObj.targetRotation : fishObj.targetRotation;
                             fishObj.phase = 'rising'; // Move to rising phase
@@ -354,8 +381,6 @@ scale: .8;
                         // **Rising Phase**
                         fishObj.y -= fishObj.extraRiseSpeed;
                         fishObj.extraRiseLeft -= fishObj.extraRiseSpeed;
-
-                        // Check if extra rise is complete
                         if (fishObj.extraRiseLeft <= 0) {
                             fishObj.phase = 'fading'; // Move to fading phase
                         }
@@ -365,11 +390,19 @@ scale: .8;
                         fishObj.alpha = Math.max(fishObj.alpha - 0.005, 0); // Slower fade-out
                     }
 
-                    // Apply growth with capping
-                    if (fishObj.size < baseSize * sizeScale * fishObj.individualScale * 2) { // Prevent excessive growth
+                    // ================================
+                    //  3A. GROWTH WITH WEIGHT FACTOR
+                    // ================================
+                    // Calculate the "intended max" size for this fish:
+                    const intendedMaxSize = (function() {
+                        // baseSize * sizeScale * fishObj.individualScale * weightFactor
+                        const weightFactor = getWeightScaleFactor(fishObj.weight);
+                        return baseSize * sizeScale * fishObj.individualScale * weightFactor * 2; 
+                    })();
+
+                    if (fishObj.size < intendedMaxSize) {
                         fishObj.size *= growthFactor;
-                        // Ensure size does not exceed maxSize
-                        fishObj.size = Math.min(fishObj.size, baseSize * sizeScale * fishObj.individualScale * 2);
+                        fishObj.size = Math.min(fishObj.size, intendedMaxSize);
                     }
 
                     // Check removal conditions
@@ -378,22 +411,19 @@ scale: .8;
                         continue; // Skip drawing this fish
                     }
 
-                    // **Draw the Active Fish**
-                    ctx.save(); // Save the current state
-                    ctx.globalAlpha = fishObj.alpha; // Set opacity
+                    // Draw the fish
+                    ctx.save();
+                    ctx.globalAlpha = fishObj.alpha;
 
                     // Translate to fish position
                     ctx.translate(fishObj.x, fishObj.y);
 
-                    // **IMPORTANT:** Rotate first, then flip to maintain correct rotation direction
-                    ctx.rotate((fishObj.rotation * Math.PI) / 180); // Rotate the canvas
-
-                    // Flip the fish horizontally if needed
+                    // Rotate first, then flip if needed
+                    ctx.rotate((fishObj.rotation * Math.PI) / 180);
                     if (fishObj.flipped) {
-                        ctx.scale(-1, 1); // Flip horizontally
+                        ctx.scale(-1, 1);
                     }
 
-                    // Draw the fish image centered at (0,0)
                     ctx.drawImage(
                         fishObj.fish.image,
                         -fishObj.size / 2,
@@ -402,51 +432,40 @@ scale: .8;
                         fishObj.size
                     );
 
-                    ctx.restore(); // Restore the state
+                    ctx.restore();
                 }
 
                 // **Draw Caught Fish**
                 caughtFishQueue.forEach((caughtFish, index) => {
-                    // Update caught fish timer
                     caughtFish.timeLeft -= 16; // Approximate frame time (16ms)
 
                     if (caughtFish.phase === 'moving') {
                         // Move upwards
                         caughtFish.y -= caughtFish.moveSpeed;
-
-                        // Check if it's time to start fading
-                        if (caughtFish.timeLeft <= 5000) { // 5 seconds before fade out
+                        // Start fading with 5 seconds left
+                        if (caughtFish.timeLeft <= 5000) {
                             caughtFish.phase = 'fading';
                         }
                     }
 
                     if (caughtFish.phase === 'fading') {
-                        // Fade out
                         caughtFish.alpha = Math.max(caughtFish.alpha - 0.02, 0);
                     }
 
-                    // Remove caught fish if fully faded or moved beyond the top of the screen
-                    if (caughtFish.alpha <= 0 || caughtFish.y < -caughtFish.size * 2) { // Changed to allow full disappearance
+                    // Remove if fully faded or gone off the top
+                    if (caughtFish.alpha <= 0 || caughtFish.y < -caughtFish.size * 2) {
                         caughtFishQueue.splice(index, 1);
                         return;
                     }
 
-                    // **Draw Caught Fish Image and Labels**
+                    // Draw caught fish label
                     ctx.save();
                     ctx.globalAlpha = caughtFish.alpha;
-
-                    // Position at bottom center with margin
-                    const marginBottom = 20; // 20px from the bottom
-                    const x = canvas.width - 400; // Center horizontally
+                    const x = canvas.width - 400; 
                     const y = caughtFish.y;
-
-                    // Translate to the position
                     ctx.translate(x, y);
 
-                    // **Do Not Flip the Caught Fish**
-                    // Removed the flipping to maintain original orientation
-
-                    // Draw the fish image centered at (0,0)
+                    // Draw the fish image
                     ctx.drawImage(
                         caughtFish.image,
                         -caughtFish.size / 2,
@@ -455,78 +474,61 @@ scale: .8;
                         caughtFish.size
                     );
 
-                    // **Draw "Caught" Text**
-                    ctx.font = "900 84px 'Orbitron', sans-serif"; // Increased by 3.5 times
+                    // "Caught" text
+                    ctx.font = "900 84px 'Orbitron', sans-serif";
                     ctx.fillStyle = "#FFFFFF";
                     ctx.textAlign = "center";
                     ctx.shadowColor = "white";
-                    ctx.shadowBlur = 14; // Increased shadow for better visibility
-                    ctx.fillText("Caught", 0, caughtFish.size / 2 + 30); // Position below the fish
+                    ctx.shadowBlur = 14;
+                    ctx.fillText("Caught", 0, caughtFish.size / 2 + 30);
 
-                    // **Draw Weight Text**
-                    ctx.font = "900 70px 'Orbitron', sans-serif"; // Increased by 3.5 times
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.textAlign = "center";
-                    ctx.shadowColor = "white";
-                    ctx.shadowBlur = 12; // Increased shadow
-                    ctx.fillText(`${caughtFish.weight} lbs`, 0, -caughtFish.size / 2 - 10); // Position above the fish
+                    // Weight text
+                    ctx.font = "900 70px 'Orbitron', sans-serif";
+                    ctx.fillText(`${caughtFish.weight} lbs`, 0, -caughtFish.size / 2 - 10);
 
-                    // **Draw Name Text**
-                    ctx.font = "900 63px 'Orbitron', sans-serif"; // Increased by 3.5 times
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.textAlign = "center";
-                    ctx.shadowColor = "white";
-                    ctx.shadowBlur = 10; // Increased shadow
-                    ctx.fillText(caughtFish.name, 0, -caughtFish.size / 2 - 80); // Increased Y position by 30px (from -50 to -80)
+                    // Name text
+                    ctx.font = "900 63px 'Orbitron', sans-serif";
+                    ctx.fillText(caughtFish.name, 0, -caughtFish.size / 2 - 80);
 
                     ctx.restore();
                 });
 
-                // **Request the next animation frame**
+                // Request the next animation frame
                 requestAnimationFrame(drawFish);
             }
 
-            // **Zoom Controls Functionality**
+            // ====================================================
+            //  4. ZOOM CONTROLS & BACKGROUND (OCEAN) SCALING
+            // ====================================================
             const zoomButtons = document.querySelectorAll('.zoom-button');
             const oceanElement = document.querySelector('.Ocean');
             const scaleIndicator = document.querySelector('.scale-indicator span');
 
-            // Function to update zoom based on selected level
             function updateZoom(level) {
                 const zoom = zoomLevels[level];
                 if (!zoom) return;
-
-                // Update current zoom level
                 currentZoomLevel = level;
 
-                // Clear all active fish to prevent size glitches
+                // Clear active fish to prevent size glitches
                 activeFish.length = 0;
 
-                // Update global scaling variables
+                // Update global scaling
                 backgroundScale = zoom.backgroundScale;
                 sizeScale = zoom.sizeScale;
                 const newSpawnInterval = zoom.spawnInterval;
                 const maxFish = zoom.maxFish;
 
-                // Update spawn interval
                 setSpawnInterval(newSpawnInterval);
-
-                // Update background size with smooth transition
                 oceanElement.style.backgroundSize = `${900 * backgroundScale}px`;
-
-                // Update scale indicator
                 updateScaleIndicator();
 
-                // Optionally, you can log or display the current zoom level for debugging
-                console.log(`Zoom Level: ${level}, Background Scale: ${backgroundScale}, Size Scale: ${sizeScale}, Spawn Interval: ${newSpawnInterval}, Max Fish: ${maxFish}`);
+                console.log(`Zoom Level: ${level}, BG Scale: ${backgroundScale}, Size Scale: ${sizeScale}, Interval: ${newSpawnInterval}, Max Fish: ${maxFish}`);
             }
 
-            // Function to update the scale indicator
             function updateScaleIndicator() {
                 scaleIndicator.innerText = `${sizeScale.toFixed(1)}x`;
             }
 
-            // Add event listeners to zoom buttons
             zoomButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const level = button.getAttribute('data-zoom');
@@ -534,43 +536,29 @@ scale: .8;
                 });
             });
 
-            // **Queue Processing for Caught Fish**
-            // Set maximum number of concurrent caught fish
-            const maxCaughtFish = 30; // Adjust as needed
-
-            // Time delay between each fish's appearance in milliseconds
-            const fishQueueDelay = 1200; // 1.2 seconds
-
-            // Variable to keep track of the next fish's start time
+            // ============================================
+            //  5. MANAGE CAUGHT FISH (QUEUE & DISPLAY)
+            // ============================================
+            const maxCaughtFish = 30; // how many caught fish can be on-screen
+            const fishQueueDelay = 1200; // 1.2s delay between each new caught fish's appearance
             let nextFishStartTime = Date.now();
-        
-            // Function to process pending caught fish
+
             function processPendingCaughtFish() {
                 if (pendingCaughtFish.length > 0 && caughtFishQueue.length < maxCaughtFish) {
                     const fish = pendingCaughtFish.shift();
                     
-                    // Assign a start time based on the last fish's start time
                     const currentTime = Date.now();
                     const startTime = Math.max(currentTime, nextFishStartTime);
-
-                    // Update nextFishStartTime for the next fish
                     nextFishStartTime = startTime + fishQueueDelay;
 
-                    // Assign the start time to the fish object
                     fish.startTime = startTime;
-
-                    // Reset y to the bottom
-                    fish.y = canvas.height - fish.size + 320;
-
-                    // Add the fish to caughtFishQueue
+                    fish.y = canvas.height - fish.size + 320; // reset y
                     caughtFishQueue.push(fish);
                 }
             }
-
-            // Set up interval to process the queue every 500ms
             setInterval(processPendingCaughtFish, 1000);
 
-            // **Handle Click Events to Catch Fish**
+            // Click to catch fish
             canvas.addEventListener('click', function(event) {
                 const rect = canvas.getBoundingClientRect();
                 const clickX = event.clientX - rect.left;
@@ -578,7 +566,6 @@ scale: .8;
 
                 let fishClicked = false;
 
-                // Iterate through activeFish to detect if a fish is clicked
                 for (let i = activeFish.length - 1; i >= 0; i--) {
                     const fish = activeFish[i];
                     const fishLeft = fish.x - fish.size / 2;
@@ -587,153 +574,59 @@ scale: .8;
                     const fishBottom = fish.y + fish.size / 2;
 
                     if (clickX >= fishLeft && clickX <= fishRight && clickY >= fishTop && clickY <= fishBottom) {
-                        // Fish is clicked
                         fishClicked = true;
-
-                        // Remove from activeFish
                         activeFish.splice(i, 1);
 
-                        // Assign a random name from a predefined list
                         const fishNames = [
-  "Bumbleflap",
-  "Wiggletail",
-  "Zizzlefin",
-  "Puffernoodle",
-  "Squigglesprocket",
-  "Fluffernibble",
-  "Glimmergloop",
-  "Snicklescale",
-  "Jumblejaw",
-  "Twinkletooth",
-  "Fizzleflap",
-  "Bloopernook",
-  "Quirklefin",
-  "Wobblewhisk",
-  "Dazzleflipper",
-  "Muddleblink",
-  "Pippitypuff",
-  "Sproingleswim",
-  "Fizzlenoodle",
-  "Gigglegill",
-  "Wobblenoodle",
-  "Snazzlefin",
-  "Flipperdoodle",
-  "Breezleflap",
-  "Jigglyjaws",
-  "Twistletail",
-  "Zanyzoom",
-  "Puddleplop",
-  "Glimmerglide",
-  "Snufflefin",
-  "Frolicflap",
-  "Wigglywobble",
-  "Bubblybloop",
-  "Quibblequack",
-  "Doodlewhisk",
-  "Fluffleglide",
-  "Gigglesplash",
-  "Twinklewink",
-  "Snickerfins",
-  "Pufflesnort",
-  "Jesterjiggle",
-  "Wobblewink",
-  "Fizzleswim",
-  "Bumblebounce",
-  "Zigzaggle",
-  "Gloopershine",
-  "Snugglewhisk",
-  "Flipperflap",
-  "Pipplescale",
-  "Quirkysplash",
-  "Wigglewink",
-  "Bloopersnap",
-  "Twinkletwirl",
-  "Fizzleflutter",
-  "Glimmerglide",
-  "Jiggletail",
-  "Snicklesnort",
-  "Dazzleswish",
-  "Puddlewhisk",
-  "Wobblewings",
-  "Breezybloop",
-  "Quibblescale",
-  "Fluffleswim",
-  "Giggleglide",
-  "Twistlesplash",
-  "Snuggleflap",
-  "Fizzletwirl",
-  "Bumbleglimmer",
-  "Wiggletwinkle",
-  "Pufflescale",
-  "Jesterflipper",
-  "Snickleswish",
-  "Twinkleflutter",
-  "Glimmerglimmer",
-  "Wobblewhisker",
-  "Doodleglide",
-  "Blooperswish",
-  "Quirkytwirl",
-  "Fluffletail",
-  "Giggleswish",
-  "Twistlesnort",
-  "Snuggleglide",
-  "Fizzlebloop",
-  "Bumbleflutter",
-  "Wigglywhisk",
-  "Puffletwinkle",
-  "Jesterglide",
-  "Snickletail",
-  "Twinklewhisk",
-  "Glimmerflutter",
-  "Wobbletwirl",
-  "Dazzletwinkle",
-  "Blooperscale",
-  "Quirkyswim",
-  "Flufflespout",
-  "Giggleflutter",
-  "Twistlescale",
-  "Snuggletwirl",
-  "Fizzlesnort",
-  "Bumblewhisk",
-  "Wiggletwirl",
-  "Pufflesplash",
-  "Jestertwinkle"
-];
-
+                            "Bumbleflap","Wiggletail","Zizzlefin","Puffernoodle","Squigglesprocket","Fluffernibble",
+                            "Glimmergloop","Snicklescale","Jumblejaw","Twinkletooth","Fizzleflap","Bloopernook",
+                            "Quirklefin","Wobblewhisk","Dazzleflipper","Muddleblink","Pippitypuff","Sproingleswim",
+                            "Fizzlenoodle","Gigglegill","Wobblenoodle","Snazzlefin","Flipperdoodle","Breezleflap",
+                            "Jigglyjaws","Twistletail","Zanyzoom","Puddleplop","Glimmerglide","Snufflefin",
+                            "Frolicflap","Wigglywobble","Bubblybloop","Quibblequack","Doodlewhisk","Fluffleglide",
+                            "Gigglesplash","Twinklewink","Snickerfins","Pufflesnort","Jesterjiggle","Wobblewink",
+                            "Fizzleswim","Bumblebounce","Zigzaggle","Gloopershine","Snugglewhisk","Flipperflap",
+                            "Pipplescale","Quirkysplash","Wigglewink","Bloopersnap","Twinkletwirl","Fizzleflutter",
+                            "Glimmerglide","Jiggletail","Snicklesnort","Dazzleswish","Puddlewhisk","Wobblewings",
+                            "Breezybloop","Quibblescale","Fluffleswim","Giggleglide","Twistlesplash","Snuggleflap",
+                            "Fizzletwirl","Bumbleglimmer","Wiggletwinkle","Pufflescale","Jesterflipper",
+                            "Snickleswish","Twinkleflutter","Glimmerglimmer","Wobblewhisker","Doodleglide",
+                            "Blooperswish","Quirkytwirl","Fluffletail","Giggleswish","Twistlesnort","Snuggleglide",
+                            "Fizzlebloop","Bumbleflutter","Wigglywhisk","Puffletwinkle","Jesterglide","Snickletail",
+                            "Twinklewhisk","Glimmerflutter","Wobbletwirl","Dazzletwinkle","Blooperscale","Quirkyswim",
+                            "Flufflespout","Giggleflutter","Twistlescale","Snuggletwirl","Fizzlesnort","Bumblewhisk",
+                            "Wiggletwirl","Pufflesplash","Jestertwinkle"
+                        ];
                         const randomName = fishNames[Math.floor(Math.random() * fishNames.length)];
 
-                        // Add to pendingCaughtFish instead of caughtFishQueue
                         pendingCaughtFish.push({
                             image: fish.fish.image,
-                            size: 175, // Increased size by 3.5 times (50 * 3.5)
-                            rotation: 0,          
+                            size: 175, // bigger display size
+                            rotation: 0,
                             alpha: 1,
-                            timeLeft: 12000,       // Display for 12 seconds (moving + fading)
-                            phase: 'moving',      
-                            y: canvas.height - 175 - 20, // Starting Y position (20px margin)
-                            moveSpeed: 3,         // Pixels per frame
-                            weight: fish.weight,  // Weight in pounds
-                            flipped: false,       // Do not flip the caught fish
-                            name: randomName      // Assign the random name
+                            timeLeft: 12000,   // 12s total
+                            phase: 'moving',
+                            y: canvas.height - 175 - 20,
+                            moveSpeed: 3,
+                            weight: fish.weight,
+                            flipped: false,
+                            name: randomName
                         });
 
-                        // Record the catch timestamp for counters
+                        // Record the catch timestamp
                         const now = Date.now();
                         caughtTimestamps.push(now);
 
                         // Update combo
                         currentCombo++;
                         document.getElementById('comboDisplay').innerText = `Combo: ${currentCombo}x`;
-
-                        // Update highest combo if necessary
                         if (currentCombo > highestCombo) {
                             highestCombo = currentCombo;
                             document.getElementById('highestCombo').innerText = `${highestCombo}x`;
                         }
 
                         updateCounters();
-
-                        break; // Only catch one fish per click
+                        break;
                     }
                 }
 
@@ -744,35 +637,36 @@ scale: .8;
                 }
             });
 
-            // **Update Counters Based on Caught Timestamps**
+            // ==========================
+            //  6. COUNTERS & STATISTICS
+            // ==========================
             function updateCounters() {
                 const now = Date.now();
 
-                // Fish caught in the last minute
+                // Fish caught in last minute
                 const oneMinuteAgo = now - 60000;
-                const caughtPerMinute = caughtTimestamps.filter(timestamp => timestamp >= oneMinuteAgo).length;
+                const caughtPerMinute = caughtTimestamps.filter(t => t >= oneMinuteAgo).length;
 
-                // Fish caught in the last 30 seconds
+                // Last 30s
                 const thirtySecondsAgo = now - 30000;
-                const caughtPer30s = caughtTimestamps.filter(timestamp => timestamp >= thirtySecondsAgo).length;
+                const caughtPer30s = caughtTimestamps.filter(t => t >= thirtySecondsAgo).length;
 
-                // Fish caught in the last 10 seconds
+                // Last 10s
                 const tenSecondsAgo = now - 10000;
-                const caughtPer10s = caughtTimestamps.filter(timestamp => timestamp >= tenSecondsAgo).length;
+                const caughtPer10s = caughtTimestamps.filter(t => t >= tenSecondsAgo).length;
 
-                // Fish caught in the last 5 minutes
+                // Last 5m
                 const fiveMinutesAgo = now - 5 * 60000;
-                const caught5m = caughtTimestamps.filter(timestamp => timestamp >= fiveMinutesAgo).length;
+                const caught5m = caughtTimestamps.filter(t => t >= fiveMinutesAgo).length;
 
-                // Fish caught in the last 10 minutes
+                // Last 10m
                 const tenMinutesAgo = now - 10 * 60000;
-                const caught10m = caughtTimestamps.filter(timestamp => timestamp >= tenMinutesAgo).length;
+                const caught10m = caughtTimestamps.filter(t => t >= tenMinutesAgo).length;
 
-                // Fish caught in the last 30 minutes
+                // Last 30m
                 const thirtyMinutesAgo = now - 30 * 60000;
-                const caught30m = caughtTimestamps.filter(timestamp => timestamp >= thirtyMinutesAgo).length;
+                const caught30m = caughtTimestamps.filter(t => t >= thirtyMinutesAgo).length;
 
-                // Update the counters in the info panel
                 document.getElementById('caughtPerMinute').innerHTML = `Per Minute: <span>${caughtPerMinute}</span>`;
                 document.getElementById('caughtPer30s').innerHTML = `Per 30s: <span>${caughtPer30s}</span>`;
                 document.getElementById('caughtPer10s').innerHTML = `Per 10s: <span>${caughtPer10s}</span>`;
@@ -780,18 +674,14 @@ scale: .8;
                 document.getElementById('caught10m').innerHTML = `10 Minutes: <span>${caught10m}</span>`;
                 document.getElementById('caught30m').innerHTML = `30 Minutes: <span>${caught30m}</span>`;
             }
+            setInterval(updateCounters, 1000);
 
-            // **Periodic Counter Update**
-            setInterval(updateCounters, 1000); // Update counters every second
-
-            // **Global Timer for Total Time Since Load**
+            // Global timer
             let globalTimerStart = Date.now();
-
             function updateGlobalTimer() {
                 const now = Date.now();
-                const elapsed = now - globalTimerStart; // in milliseconds
+                const elapsed = now - globalTimerStart;
 
-                // Function to format time in HH:MM:SS
                 function formatTime(ms) {
                     const totalSeconds = Math.floor(ms / 1000);
                     const hours = Math.floor(totalSeconds / 3600);
@@ -799,53 +689,36 @@ scale: .8;
                     const seconds = totalSeconds % 60;
                     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 }
-
-                // Update global timer
-                const displayTime = formatTime(elapsed);
-                document.getElementById('globalTimer').innerHTML = `Total Time: <span>${displayTime}</span>`;
+                document.getElementById('globalTimer').innerHTML = `Total Time: <span>${formatTime(elapsed)}</span>`;
             }
+            setInterval(updateGlobalTimer, 1000);
 
-            // **Start Global Timer Updates**
-            setInterval(updateGlobalTimer, 1000); // Update global timer every second
-
-            // **Manage Caught Fish Movement and Fade Out**
+            // Manage caught fish movement
             function manageCaughtFish() {
                 for (let i = caughtFishQueue.length - 1; i >= 0; i--) {
                     const caughtFish = caughtFishQueue[i];
-
-                    // Update time left and phase
                     if (caughtFish.phase === 'moving') {
-                        // Move upwards
                         caughtFish.y -= caughtFish.moveSpeed;
-
-                        // Check if it's time to start fading
-                        if (caughtFish.timeLeft <= 5000) { // 5 seconds before fade out
+                        if (caughtFish.timeLeft <= 5000) {
                             caughtFish.phase = 'fading';
                         }
                     }
-
                     if (caughtFish.phase === 'fading') {
-                        // Fade out
                         caughtFish.alpha = Math.max(caughtFish.alpha - 0.02, 0);
                     }
-
-                    // Remove caught fish if fully faded or moved beyond the top of the screen
-                    if (caughtFish.alpha <= 0 || caughtFish.y < -caughtFish.size * 2) { // Changed to allow full disappearance
+                    if (caughtFish.alpha <= 0 || caughtFish.y < -caughtFish.size * 2) {
                         caughtFishQueue.splice(i, 1);
                     }
                 }
             }
-
-            // **Update Caught Fish Queue**
             function updateCaughtFish() {
                 manageCaughtFish();
             }
+            setInterval(updateCaughtFish, 16);
 
-            setInterval(updateCaughtFish, 16); // Approx. 60fps
-
-            // **Start the Animation Loop**
+            // Start the animation loop
             drawFish();
         }
-        </script>
+    </script>
 </body>
 </html>
