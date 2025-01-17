@@ -3788,10 +3788,11 @@ async function animate() {
 
     if (amountText) {
         const textOpacity = 1 - progress; // Fade out over time
-        const textSize = 14 + (20 * easedProgress); // Start small, grow slightly
+        const textSize = 18 + (20 * easedProgress); // Start small, grow slightly
 
         ctx.font = `${textSize}px Orbitron`;
         ctx.fillStyle = `rgba(255, 255, 255, ${textOpacity})`;
+        ctx.fontWeight = 1000;
         ctx.textAlign = "center";
         ctx.fillText(
             amountText,
